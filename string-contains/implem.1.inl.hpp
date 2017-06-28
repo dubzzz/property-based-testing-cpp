@@ -8,8 +8,6 @@ bool starts_with(const char* pattern, const char* text)
 
 bool contains(const char* pattern, const char* text)
 {
-  if (!*pattern) return true;
-  
   while (*text && ! starts_with(pattern, text++));
   return !!*text;
 }
