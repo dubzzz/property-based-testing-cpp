@@ -34,8 +34,12 @@ TEST(ContainsBug, Implem2)
   ASSERT_TRUE(contains("a", "a"));
 }*/
 
-RC_GTEST_PROP(Contains_Property, BAlwaysInABC, (std::string a, std::string b, std::string c))
+RC_GTEST_PROP(Contains_Property, BAlwaysInABC, ())
 {
+  auto gen = rc::gen::container<std::string>(rc::gen::arbitrary<char>());
+  std::string a = *gen;
+  std::string b = *gen;
+  std::string c = *gen;
   RC_ASSERT(contains(b, a + b + c));
 }
 

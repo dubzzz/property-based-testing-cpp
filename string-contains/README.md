@@ -76,3 +76,32 @@ false
 
 [  FAILED  ] Contains_Property.BAlwaysInABC (5 ms)
 ```
+
+### With [```implem.4.inl.hpp```](https://github.com/dubzzz/property-based-testing-cpp/blob/master/string-contains/implem.4.inl.hpp)
+
+Adaptation of the generators in order to generate std::string containing '\0'.
+
+```
+[ RUN      ] Contains_Property.BAlwaysInABC
+Using configuration: seed=454853540105607962
+/home/ndubien/Archives/Projets/C++/2017/property-based-testing-cpp/rapidcheck/extras/gtest/include/rapidcheck/gtest.h:29: Failure
+Failed
+Falsifiable after 11 tests and 4 shrinks
+
+std::string:
+"\0"
+
+std::string:
+"\x1"
+
+std::string:
+""
+
+/home/ndubien/Archives/Projets/C++/2017/property-based-testing-cpp/string-contains/main.cpp:43:
+RC_ASSERT(contains(b, a + b + c))
+
+Expands to:
+false
+
+[  FAILED  ] Contains_Property.BAlwaysInABC (6 ms)
+```
