@@ -1,0 +1,30 @@
+version: 1.0.{build}
+os: Visual Studio 2015
+
+environment:
+  matrix:
+  - ARCH: amd64
+  - ARCH: x86
+
+install:
+- set ORIGIN_PATH=%cd%
+- set PATH=%PATH%;c:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\
+- git submodule update --init --recursive
+- cd ..
+- git clone https://github.com/google/googletest.git
+- cd googletest
+- cmake -G "Visual Studio 14 2015" .
+- devenv.exe googletest\msvc\gtest-md.sln /Upgrade
+- devenv.exe googletest\msvc\gtest-md.sln /Build
+- mkdir googletest\lib
+- copy googletest\msvc\gtest-md\Debug\gtestd.lib googletest\lib\gtest.lib
+- copy googletest\msvc\gtest-md\Debug\gtest_main-mdd.lib googletest\lib\gtest_main.lib
+- set GTEST_ROOT=%cd%\googletest
+- cd %ORIGIN_PATH%
+
+build_script:
+- cmake -G "Visual Studio 14 2015" .
+- cmake --build .
+
+test_script:
+- ctest -C Debug -VV

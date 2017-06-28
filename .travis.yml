@@ -1,0 +1,46 @@
+language: cpp
+sudo: false
+
+# List of apt packages available from Travis CI
+# can be found at: https://github.com/travis-ci/apt-package-whitelist
+addons_shortcuts:
+  addons_clang35: &clang35
+    apt:
+      sources: ['ubuntu-toolchain-r-test', 'george-edison55-precise-backports', 'llvm-toolchain-precise-3.5']
+      packages: ['clang-3.5', 'g++-4.9', 'cmake', 'cmake-data', 'libgtest-dev']
+  addons_gcc49: &gcc49
+    apt:
+      sources: ['ubuntu-toolchain-r-test', 'george-edison55-precise-backports']
+      packages: ['g++-4.9', 'cmake', 'cmake-data', 'libgtest-dev']
+
+matrix:
+  include:
+    # Debian 8 Jessie, default setup: clang-3.5, g++-4.9
+    - os: linux
+      compiler: clang
+      env: COMPILER_VERSION=3.5
+      addons: *clang35
+    - os: linux
+      compiler: gcc
+      env: COMPILER_VERSION=4.9
+      addons: *gcc49
+
+install: 
+  - mkdir ~/gtest && cd ~/gtest
+  - export LIBRARY_PATH=$(pwd)
+  - cp -r /usr/src/gtest/* ./
+  - cmake -D CMAKE_INSTALL_PREFIX:PATH=./ ./
+  - make
+  - mkdir include && cp -r /usr/include/gtest include
+  - mkdir lib && cp libgtest* lib
+  - cd -
+
+script:
+  - export GTEST_COLOR=1
+  - export GTEST_ROOT="~/gtest"
+  - export CC="${CC}-${COMPILER_VERSION}"
+  - export CXX="${CXX}-${COMPILER_VERSION}"
+  - export CXX_STD="c++14"
+  - cmake .
+  - make -j4
+  - ctest -VV
