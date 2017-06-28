@@ -10,7 +10,7 @@ bool contains(const char* pattern, const char* text)
 {
   if (!*pattern) return true;
   
-  for ( ; *text && ! starts_with(pattern, text) ; ++text);
+  while (*text && ! starts_with(pattern, text++));
   return !!*text;
 }
 

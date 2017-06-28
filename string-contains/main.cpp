@@ -25,6 +25,15 @@ TEST(Contains, LargerPattern)
   ASSERT_FALSE(contains("no", ""));
 }
 
+/*TEST(ContainsBug, Implem1)
+{
+  ASSERT_TRUE(contains("", ""));
+}
+TEST(ContainsBug, Implem2)
+{
+  ASSERT_TRUE(contains("a", "a"));
+}*/
+
 RC_GTEST_PROP(Contains_Property, BAlwaysInABC, (std::string a, std::string b, std::string c))
 {
   RC_ASSERT(contains(b, a + b + c));
