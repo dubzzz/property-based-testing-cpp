@@ -2,14 +2,14 @@
 
 bool starts_with(const char* pattern, const char* text)
 {
-  for ( ; *pattern && *pattern == *text ; ++pattern, ++text);
+  for ( ; *pattern == *text ; ++pattern, ++text);
   return !*pattern;
 }
 
 bool contains(const char* pattern, const char* text)
 {
   if (!*pattern) return true;
-
+  
   for ( ; *text && ! starts_with(pattern, text) ; ++text);
   return !!*text;
 }
