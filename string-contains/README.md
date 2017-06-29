@@ -84,7 +84,7 @@ Adaptation of the generators in order to generate std::string containing '\0'.
 ```
 [ RUN      ] Contains_Property.BAlwaysInABC
 Using configuration: seed=454853540105607962
-/home/ndubien/Archives/Projets/C++/2017/property-based-testing-cpp/rapidcheck/extras/gtest/include/rapidcheck/gtest.h:29: Failure
+/property-based-testing-cpp/rapidcheck/extras/gtest/include/rapidcheck/gtest.h:29: Failure
 Failed
 Falsifiable after 11 tests and 4 shrinks
 
@@ -97,11 +97,36 @@ std::string:
 std::string:
 ""
 
-/home/ndubien/Archives/Projets/C++/2017/property-based-testing-cpp/string-contains/main.cpp:43:
+/property-based-testing-cpp/string-contains/main.cpp:43:
 RC_ASSERT(contains(b, a + b + c))
 
 Expands to:
 false
 
 [  FAILED  ] Contains_Property.BAlwaysInABC (6 ms)
+```
+
+### With [```implem.5.inl.hpp```](https://github.com/dubzzz/property-based-testing-cpp/blob/master/string-contains/implem.5.inl.hpp)
+
+Exactly follows the property stated in the rules as property to be checked.
+
+```
+[ RUN      ] Contains_Property.IfAndOnlyIfIndexSuchThatSubstringIsPattern
+/property-based-testing-cpp/rapidcheck/extras/gtest/include/rapidcheck/gtest.h:29: Failure
+Failed
+Falsifiable after 4 tests
+
+std::string:
+"\0\0"
+
+std::string:
+"\0"
+
+/property-based-testing-cpp/string-contains/main.cpp:70:
+RC_ASSERT(property_if_only_if(pattern, text) == contains(pattern, text))
+
+Expands to:
+false == true
+
+[  FAILED  ] Contains_Property.IfAndOnlyIfIndexSuchThatSubstringIsPattern (1 ms)
 ```
