@@ -9,6 +9,8 @@ void locate_in_space(Space& space, std::size_t rounds)
   
   for (std::size_t n {} ; n != rounds && ! space.solved() ; ++n)
   {
+    if (x_min >= x_max || y_min >= y_max) { return; }
+    
     std::size_t x0 = space.previous_x();
     std::size_t y0 = space.previous_y();
     auto const& hint = space.hint();
