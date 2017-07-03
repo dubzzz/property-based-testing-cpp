@@ -30,3 +30,35 @@ public:
 ```
 
 And a limited amount of tries, you need to reach a target in the grid.
+
+## Property based status
+
+### With [```implem.1.inl.hpp```](https://github.com/dubzzz/property-based-testing-cpp/blob/master/shadows-of-the-knight/implem.1.inl.hpp)
+
+This implementation is enough to make all tests green (for tests visible to the user in CodinGame).
+Replacing `y_max = y0 -1` by `y_max = y0` is enough to pass all the tests even the hidden ones.
+
+```
+[ RUN      ] ShadowsOfTheKnight.ShouldAlwaysReachTheTarget
+Using configuration: seed=15157045376141439530
+/property-based-testing-cpp/rapidcheck/extras/gtest/include/rapidcheck/gtest.h:29: Failure
+Failed
+Falsifiable after 9 tests and 5 shrinks
+
+std::tuple<unsigned long, unsigned long>:
+(8, 8)
+
+start position:
+(0, 1)
+
+target position:
+(1, 0)
+
+/property-based-testing-cpp/shadows-of-the-knight/main.cpp:107:
+RC_ASSERT(space.solved())
+
+Expands to:
+false
+
+[  FAILED  ] ShadowsOfTheKnight.ShouldAlwaysReachTheTarget (15 ms)
+```
