@@ -86,17 +86,15 @@ TEST(ShadowsOfTheKnight, NotThere)
   ASSERT_TRUE(space.solved());
 }
 
-RC_GTEST_PROP(ShadowsOfTheKnight, Random2DSpace, ())
+RC_GTEST_PROP(ShadowsOfTheKnight, ShouldAlwaysReachTheTarget, (std::size_t w, std::size_t h))
 {
-  auto w = *rc::gen::inRange(std::size_t(), std::size_t(10000));
-  auto h = *rc::gen::inRange(std::size_t(), std::size_t(10000));
-  
+  RC_PRE(!!w && !!h);
   auto inRangeGen = rc::gen::apply([](std::size_t x, std::size_t y) { return std::make_pair(x, y); }
       , rc::gen::inRange(std::size_t(), w)
       , rc::gen::inRange(std::size_t(), h)
   );
-  auto current  = *inRangeGen;
-  auto solution = *inRangeGen;
+  auto current  = *inRangeGen.as("start position");
+  auto solution = *inRangeGen.as("target position");
   std::size_t max_guesses = std::lround(std::ceil(std::log(std::max(h, w))/std::log(2)));
   
   Space space = SpaceBuilder{}
@@ -105,7 +103,8 @@ RC_GTEST_PROP(ShadowsOfTheKnight, Random2DSpace, ())
       .withCurrent(current.first, current.second)
       .build();
   locate_in_space(space, max_guesses);
-  ASSERT_TRUE(space.solved());
+  
+  RC_ASSERT(space.solved());
 }
 
 int main(int argc, char **argv)
