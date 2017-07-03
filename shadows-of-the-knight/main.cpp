@@ -1,6 +1,7 @@
 #include "gtest/gtest.h"
 #include <rapidcheck/gtest.h>
 
+#include <cmath>
 #include <cstddef>
 
 #include "space.hpp"
@@ -85,16 +86,27 @@ TEST(ShadowsOfTheKnight, NotThere)
   ASSERT_TRUE(space.solved());
 }
 
-/*RC_GTEST_PROP(TEST_NAME, Random2DSpace, (std::size_t const& w, std::size_t const &h))
+RC_GTEST_PROP(ShadowsOfTheKnight, Random2DSpace, ())
 {
-  RC_PRE(w > static_cast<std::size_t>(0) && h > static_cast<std::size_t>(0));
-  std::size_t x = *rc::gen::inRange(std::size_t(), w);
-  std::size_t y = *rc::gen::inRange(std::size_t(), h);
-    
-  Space<2, RcAssert> space({{w, h}}, {{x, y}});
-  auto answer = locate_in_space(space);
-  ASSERT_TRUE(space.is_solution(answer));
-}*/
+  auto w = *rc::gen::inRange(std::size_t(), std::size_t(10000));
+  auto h = *rc::gen::inRange(std::size_t(), std::size_t(10000));
+  
+  auto inRangeGen = rc::gen::apply([](std::size_t x, std::size_t y) { return std::make_pair(x, y); }
+      , rc::gen::inRange(std::size_t(), w)
+      , rc::gen::inRange(std::size_t(), h)
+  );
+  auto current  = *inRangeGen;
+  auto solution = *inRangeGen;
+  std::size_t max_guesses = std::lround(std::ceil(std::log(std::max(h, w))/std::log(2)));
+  
+  Space space = SpaceBuilder{}
+      .withDimension(w, h)
+      .withSolution(solution.first, solution.second)
+      .withCurrent(current.first, current.second)
+      .build();
+  locate_in_space(space, max_guesses);
+  ASSERT_TRUE(space.solved());
+}
 
 int main(int argc, char **argv)
 {
