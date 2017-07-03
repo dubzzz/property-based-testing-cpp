@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Property-based testing -- by Nicolas DUBIEN</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body {
+        font-family: 'Droid Serif';
+      }
+      .remark-slide-content {
+        background: #272822;
+        color: #777872;
+      }
+      .remark-code, .remark-inline-code {
+        font-family: 'Ubuntu Mono';
+      }
+      .remark-code-line-highlighted {
+        background-color: #373832;
+      }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+        color: #f3f3f3;
+        line-height: 0.8em;
+        text-shadow: 0 0 20px #333;
+      }
+      a, a > code {
+        color: rgb(249, 38, 114);
+        text-decoration: none;
+      }
+      a:hover, a:hover > code {
+        color: rgb(255, 201, 14);
+        text-decoration: none;
+      }
+      ol {
+        counter-reset: step-counter;
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+      }
+      ol li {
+        counter-increment: step-counter;
+      }
+      ol li:before {
+        content: counter(step-counter, upper-roman);
+        color: rgb(255, 201, 14);
+        float: left;
+      }
+
+      .header {
+        height: 10%;
+      }
+      .content {
+        padding-top: 2%;
+        height: 80%;
+      }
+      .left-column {
+        width: 20%;
+        float: left;
+      }
+      .left-column h2 {
+        font-size: 35px;
+      }
+      .left-column h3 {
+        font-size: 20px;
+      }
+      .left-column h2:last-of-type, .left-column h3:last-child {
+        color: rgb(255, 201, 14);
+      }
+      .right-column {
+        width: 70%;
+        padding-left: 1em;
+        padding-right: 1em;
+        text-align: left;
+        float: right;
+        background: #f3f3f3;
+        color: #272822;
+      }
+      .right-column h3 {
+        color: #777872;
+        text-shadow: none;
+      }
+      .content blockquote {
+        margin: 0;
+        text-align: justify;
+        font-style: italic;
+        margin-right: 1em;
+        margin-top: 20px;
+        margin-bottom: 20px;
+        padding-left: 1em;
+      }
+      .content blockquote:before {
+        content: '\201C';
+        font-size: 2em;
+        float: left;
+        color: #777872;
+        margin-left: -1em;
+      }
+      .content blockquote p {
+        margin-top: 0;
+        margin-bottom: 0;
+      }
+      .content p {
+        text-align: justify;
+      }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+name: title_template
+layout: true
+class: center, middle
+
+---
+
+template: title_template
+
+# Property-based testing
+Using [RapidCheck](https://github.com/emil-e/rapidcheck/)
+
+---
+
+template: title_template
+
+# Agenda
+
+1. Testing today
+2. Property-based testing
+3. Real example
+
+---
+
+.header[
+  # Testing today
+]
+
+.content[
+.left-column[
+  ## Static code analysis
+]
+
+.right-column[
+
+Famous motto:
+
+> It compiles, it works
+
+]
+]
+
+---
+
+.header[
+  # Testing today
+]
+
+.content[
+.left-column[
+  ## Static code analysis
+]
+
+.right-column[
+
+> **Static program analysis** is the analysis of computer software that is performed without actually executing programs. (Wikipédia)
+
+C++ comes with various tools having static analysis abilities. Famous ones are Cppcheck, cpplint and Clang static analyzer.
+
+```cpp
+class C {
+public:
+  void f();
+};
+
+void test() {
+  C *pc;
+  pc->f(); // warn: object pointer is uninitialized
+}
+```
+Example taken from [Clang Analyzer](https://clang-analyzer.llvm.org/available_checks.html)
+
+]
+]
+
+---
+
+.header[
+  # Testing today
+]
+
+.content[
+.left-column[
+  ## Static code analysis
+]
+
+.right-column[
+
+### Pros
+
+- quick
+- no effort
+- target a whole code-line
+
+### Cons
+
+- only static problems
+
+]
+]
+
+---
+
+.header[
+  # Testing today
+]
+
+.content[
+.left-column[
+  ## Static code analysis
+  ## Example-based
+]
+
+.right-column[
+
+Test a code on a limited set of inputs from which we have already have derived expected answers.
+- Unit test
+- Functional test
+- Integration test
+
+They can be both automatic or manual.
+
+]
+]
+
+---
+
+.header[
+  # Testing today
+]
+
+.content[
+.left-column[
+  ## Static code analysis
+  ## Example-based
+]
+
+.right-column[
+
+```cpp
+// Tests IsPrime()
+TEST(IsPrimeTest, Negative) {
+  EXPECT_FALSE(IsPrime(-1));
+  EXPECT_FALSE(IsPrime(-2));
+  EXPECT_FALSE(IsPrime(INT_MIN));
+}
+TEST(IsPrimeTest, Trivial) {
+  EXPECT_FALSE(IsPrime(0));
+  EXPECT_FALSE(IsPrime(1));
+  EXPECT_TRUE(IsPrime(2));
+  EXPECT_TRUE(IsPrime(3));
+}
+TEST(IsPrimeTest, Positive) {
+  EXPECT_FALSE(IsPrime(4));
+  EXPECT_TRUE(IsPrime(5));
+  EXPECT_FALSE(IsPrime(6));
+  EXPECT_TRUE(IsPrime(23));
+}
+```
+Example taken from [Google Test](https://github.com/google/googletest/blob/master/googletest/samples/sample1_unittest.cc)
+
+]
+]
+
+---
+
+.header[
+  # Testing today
+]
+
+.content[
+.left-column[
+  ## Static code analysis
+  ## Example-based
+]
+
+.right-column[
+
+### Pros
+
+- easy to use
+- quick
+- catch most of the issues
+
+### Cons
+
+- only based on examples
+- might be costly to refactor - *test is code*
+
+]
+]
+
+---
+
+.header[
+  # Testing today
+]
+
+.content[
+.left-column[
+  ## Static code analysis
+  ## Example-based
+  ## Proved code
+]
+
+.right-column[
+
+```cpp
+template <class RIterator, class ValueType>
+bool bcontains(RIterator beg, RIterator end,
+               ValueType v) {
+  for (auto d = std::distance(beg, end) ;
+       d != 0 ;
+       d = std::distance(beg, end))
+  {
+    // at this point, the following holds:
+    // - for all it strictly before beg: *it <  v
+    // - for all it after or at end    : *it >= v
+
+    auto it = std::next(beg, d/2); // beg <= it < end
+    // distance(beg, end) > distance(beg, it)
+    // distance(beg, end) > distance(it+1, end)
+
+    if (*it == v) return true;
+    else if (*it < v) end = it;
+    else beg = ++it;
+  }
+}
+```
+
+]
+]
+
+---
+
+.header[
+  # Testing today
+]
+
+.content[
+.left-column[
+  ## Static code analysis
+  ## Example-based
+  ## Proved code
+]
+
+.right-column[
+
+### Pros
+
+- demonstration of the code
+
+### Cons
+
+- too long to write
+- might be error prone
+
+]
+]
+
+---
+
+.header[
+  # Testing today
+]
+
+.content[
+.left-column[
+  ## Static code analysis
+  ## Example-based
+  ## Proved code
+  ## Monkey testing / Fuzzers
+]
+
+.right-column[
+
+> In software testing, **monkey testing** is a technique where the user tests the application or system by providing random inputs and checking the behavior, or seeing whether the application or system will crash. Monkey testing is usually implemented as random, automated unit tests. (Wikipédia)
+
+> **Fuzzing** or **fuzz testing** is an automated software testing technique that involves providing invalid, unexpected, or random data as inputs to a computer program. The program is then monitored for exceptions such as crashes, or failing built-in code assertions or for finding potential memory leaks. (Wikipédia)
+
+]
+]
+
+---
+
+.header[
+  # Testing today
+]
+
+.content[
+.left-column[
+  ## Static code analysis
+  ## Example-based
+  ## Proved code
+  ## Monkey testing / Fuzzers
+]
+
+.right-column[
+
+### Pros
+
+- humans are biased
+- check corner cases
+
+### Cons
+
+- random
+- not really used to check a result
+
+]
+]
+
+---
+
+template: title_template
+
+# Agenda
+
+1. Testing today
+2. Property-based testing
+3. Real example
+
+---
+
+.header[
+  # Property-based testing
+]
+
+.content[
+.left-column[
+  ## What is it?
+]
+
+.right-column[
+
+Basically the idea is to be able to test properties instead of isolated cases.
+Instead of checking a limited range of cases, we want to cover a larger scope of inputs.
+
+In mathematics, a property is something like:
+
+> for all (x, y, ...)
+
+> such that precondition(x, y, ...) holds
+
+> property(x, y, ...) is true
+
+For example f being transitive is defined as follow:
+
+> for all (x, y, z)
+
+> such that f(x, y) and f(y, z)
+
+> f(x, z) is true
+
+]
+]
+
+---
+
+.header[
+  # Property-based testing
+]
+
+.content[
+.left-column[
+  ## What is it?
+  ## How does it work?
+]
+
+.right-column[
+
+Each time we run a test to check a property,
+it generates a fixed amount of inputs randomly and check if the property holds.
+
+In case of a failure, it shrinks the failing case in order to summarize it in a simpler way.
+
+Most of the time such frameworks also test for classical cases of failures such as empty array, null values or magic integers (*eg.:* -1, 1).
+
+]
+]
+
+---
+
+.header[
+  # Property-based testing
+]
+
+.content[
+.left-column[
+  ## What is it?
+  ## How does it work?
+  ## Typical properties
+  ### Bounded output
+]
+
+.right-column[
+
+Assumptions concerning the range in which will be the output.
+
+```cpp
+RC_GTEST_PROP(Average, ShouldBeBetweenAAndB,
+              (int a, int b))
+{
+  RC_PRE(a <= b);
+  RC_ASSERT(a <= average(a,b) && average(a,b) <= b);
+}
+```
+
+> for all `a` and `b` integers,
+
+> the average of `a` and `b` is between `a` and `b`
+
+]
+]
+
+---
+
+.header[
+  # Property-based testing
+]
+
+.content[
+.left-column[
+  ## What is it?
+  ## How does it work?
+  ## Typical properties
+  ### Bounded output
+  ### Round trip
+]
+
+.right-column[
+
+Encode and decode pair of functions.
+
+```cpp
+RC_GTEST_PROP(RomanConversion, FromOfToIsIdentity,
+              (int n))
+{
+  RC_ASSERT(from_roman(to_roman(n)));
+}
+```
+
+> for all `n` integer,
+
+> the integer equivalent of the roman representation of `n` is itself
+
+]
+]
+
+---
+
+.header[
+  # Property-based testing
+]
+
+.content[
+.left-column[
+  ## What is it?
+  ## How does it work?
+  ## Typical properties
+  ### Bounded output
+  ### Round trip
+  ### Combination of functions
+]
+
+.right-column[
+
+Some properties hold given a combination of multiple functions.
+
+```cpp
+RC_GTEST_PROP(LcmGcd, RelationBetweenLcmAndGcd,
+              (int a, int b))
+{
+  RC_ASSERT(lcm(a,b) * gcd(a,b) = a * b);
+}
+```
+
+> for all `a` and `b` integers,
+
+> `lcm(a,b) * gcd(a,b) = a * b`
+
+]
+]
+
+---
+
+.header[
+  # Property-based testing
+]
+
+.content[
+.left-column[
+  ## What is it?
+  ## How does it work?
+  ## Typical properties
+  ### Bounded output
+  ### Round trip
+  ### Combination of functions
+  ### Subset of all possible inputs
+]
+
+.right-column[
+
+Subset of inputs having a trivial answer.
+
+```cpp
+RC_GTEST_PROP(Contains,
+              ShouldBeTrueOnAllStringsBuiltAroundPattern,
+              (std::string a,
+               std::string b,
+               std::string c))
+{
+  RC_ASSERT(contains(b, a + b + c));
+}
+```
+
+> for all `(a, b, c)` strings,
+
+> `b` is a substring of the concatenation of `a`, `b` and `c`
+
+]
+]
+
+---
+
+.header[
+  # Property-based testing
+]
+
+.content[
+.left-column[
+  ## What is it?
+  ## How does it work?
+  ## Typical properties
+  ### Bounded output
+  ### Round trip
+  ### Combination of functions
+  ### Subset of all possible inputs
+  ### Against simpler implementation
+]
+
+.right-column[
+
+Another algorithm - *in general, simpler to implement* - exists.
+
+```cpp
+RC_GTEST_PROP(FindDicho, ShouldBeSameAsSimpler,
+              (std::vector<int> data, int n))
+{
+  std::sort(data.begin(), data.end());
+  RC_ASSERT(find_dicho(data, n) == find_linear(data, n));
+}
+```
+
+> for all `data` - *sorted array of integers* - and `n` - *integer*,
+
+> the result of the linear search of `n` in `data` is the same as the one of the binary search of `n` in `data`
+
+]
+]
+
+---
+
+template: title_template
+
+# Agenda
+
+1. Testing today
+2. Property-based testing
+3. Real example
+
+---
+
+.header[
+  # Real example
+]
+
+.content[
+.left-column[
+  ## Problem statement
+]
+
+.right-column[
+
+> The goal of this puzzle is to guess the coordinate of a bomb (line and column of a 2 dimensional array). You will have to make a guess at each step of the puzzle and adjust it from given feedbacks. Of course, you have a limited number of guess.
+
+Taken from [CodinGame](https://www.codingame.com/training/medium/shadows-of-the-knight-episode-1)
+
+> Before each [guess], the heat-signature device will provide Batman with the direction of the bombs based on Batman current position.
+
+Taken from [CodinGame](https://www.codingame.com/training/medium/shadows-of-the-knight-episode-1)
+
+]
+]
+
+    </textarea>
+    <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+    <script>
+      /* Documentation avaialable at https://github.com/gnab/remark/wiki/Configuration */
+      var slideshow = remark.create({
+          highlightStyle: 'github-gist', //'monokai-sublime',
+          highlightLines: true
+        });
+    </script>
+  </body>
+</html>
