@@ -86,9 +86,11 @@ TEST(ShadowsOfTheKnight, NotThere)
   ASSERT_TRUE(space.solved());
 }
 
-RC_GTEST_PROP(ShadowsOfTheKnight, ShouldAlwaysReachTheTarget, (std::size_t w, std::size_t h))
+RC_GTEST_PROP(ShadowsOfTheKnight, ShouldAlwaysReachTheTarget, ())
 {
-  RC_PRE(!!w && !!h);
+  auto w = *rc::gen::inRange(std::size_t(1), std::size_t(10000)).as("grid width");
+  auto h = *rc::gen::inRange(std::size_t(1), std::size_t(10000)).as("grid height");
+  
   auto inRangeGen = rc::gen::apply([](std::size_t x, std::size_t y) { return std::make_pair(x, y); }
       , rc::gen::inRange(std::size_t(), w)
       , rc::gen::inRange(std::size_t(), h)
