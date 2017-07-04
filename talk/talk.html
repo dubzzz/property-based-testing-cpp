@@ -338,6 +338,7 @@ bool bcontains(RIterator beg, RIterator end,
     else if (*it < v) end = it;
     else beg = ++it;
   }
+  return false;
 }
 ```
 
