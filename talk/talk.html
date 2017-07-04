@@ -84,6 +84,9 @@
         color: #777872;
         text-shadow: none;
       }
+      .right-column img {
+        max-width: 520px;
+      }
       .content blockquote {
         margin: 0;
         text-align: justify;
@@ -703,6 +706,192 @@ Taken from [CodinGame](https://www.codingame.com/training/medium/shadows-of-the-
 > Before each [guess], the heat-signature device will provide Batman with the direction of the bombs based on Batman current position.
 
 Taken from [CodinGame](https://www.codingame.com/training/medium/shadows-of-the-knight-episode-1)
+
+]
+]
+
+---
+
+.header[
+  # Real example
+]
+
+.content[
+.left-column[
+  ## Problem statement
+]
+
+.right-column[
+
+Prototype:
+
+```cpp
+void locate_in_space(Space& space, std::size_t rounds);
+```
+
+]
+]
+
+---
+
+.header[
+  # Real example
+]
+
+.content[
+.left-column[
+  ## Problem statement
+  ## Materials
+]
+
+.right-column[
+
+Helper class to deal with inputs coming from CodinGame:
+
+```cpp
+class Space
+{
+public:
+  // dimensions of the grid
+  std::size_t dimension_x() const;
+  std::size_t dimension_y() const;
+  
+  // last known location
+  std::size_t previous_x() const;
+  std::size_t previous_y() const;
+  
+  // direction to the target (U / D, L / R)
+  std::string const& hint() const;
+  // is it the position of the target?
+  bool solved() const;
+  
+  // update position
+  void move(std::size_t x, std::size_t y);
+};
+```
+
+]
+]
+
+---
+
+.header[
+  # Real example
+]
+
+.content[
+.left-column[
+  ## Problem statement
+  ## Materials
+  ## Implementation
+]
+
+.right-column[
+
+Submited implementation:
+
+```cpp
+void locate_in_space(Space& space, std::size_t rounds)
+{
+  std::size_t x_min = 0;
+  std::size_t x_max = space.dimension_x();
+  std::size_t y_min = 0;
+  std::size_t y_max = space.dimension_y();
+  
+  for (std::size_t n {} ;
+       n != rounds && ! space.solved() ;
+       ++n)
+  {
+    // content on next slide
+  }
+}
+```
+
+]
+]
+
+---
+
+.header[
+  # Real example
+]
+
+.content[
+.left-column[
+  ## Problem statement
+  ## Materials
+  ## Implementation
+]
+
+.right-column[
+
+```cpp
+if (x_min >= x_max || y_min >= y_max) { return; }
+    
+std::size_t y0 = space.previous_y();
+auto const& hint = space.hint();
+
+if (hint[0] == 'U')
+{
+  y_max = y0 -1;
+  y0 = (y_max + y_min) /2;
+}
+else if (hint[0] == 'D')
+{
+  y_min = y0 +1;
+  y0 = (y_max + y_min) /2;
+}
+
+// same for x...
+
+space.move(x0, y0);
+```
+
+]
+]
+
+---
+
+.header[
+  # Real example
+]
+
+.content[
+.left-column[
+  ## Problem statement
+  ## Materials
+  ## Implementation
+  ## Result
+]
+
+.right-column[
+
+User tests:
+
+![codingame user tests](https://dubzzz.github.io/property-based-testing-cpp/talk/codingame-user-tests.png "CodinGame user tests")
+
+]
+]
+
+---
+
+.header[
+  # Real example
+]
+
+.content[
+.left-column[
+  ## Problem statement
+  ## Materials
+  ## Implementation
+  ## Result
+]
+
+.right-column[
+
+Evaluation tests:
+
+![codingame eval tests](https://dubzzz.github.io/property-based-testing-cpp/talk/codingame-eval-tests.png "CodinGame eval tests")
 
 ]
 ]
