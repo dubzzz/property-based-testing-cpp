@@ -896,6 +896,100 @@ Evaluation tests:
 ]
 ]
 
+---
+
+.header[
+  # Real example
+]
+
+.content[
+.left-column[
+  ## Problem statement
+  ## Materials
+  ## Implementation
+  ## Result
+  ## Property-based testing
+]
+
+.right-column[
+
+Test implementation using RapidCheck:
+
+```cpp
+RC_GTEST_PROP(ShadowsOfTheKnight, SAlwaysReachTarget, ())
+{
+  auto w = *inRange(1, 10000).as("grid width");
+  auto h = *inRange(1, 10000).as("grid height");
+  
+  auto inRangeGen = apply(
+      [](auto x, auto y) { return std::make_pair(x, y); }
+      , inRange(0, w)
+      , inRange(0, h));
+  auto current  = *inRangeGen.as("start position");
+  auto solution = *inRangeGen.as("target position");
+  
+  Space space = SpaceBuilder{}
+      .withDimension(w, h)
+      .withSolution(solution.first, solution.second)
+      .withCurrent(current.first, current.second)
+      .build();
+  locate_in_space(space, std::max(h, w));
+  
+  RC_ASSERT(space.solved());
+}
+```
+
+]
+]
+
+---
+
+.header[
+  # Real example
+]
+
+.content[
+.left-column[
+  ## Problem statement
+  ## Materials
+  ## Implementation
+  ## Result
+  ## Property-based testing
+]
+
+.right-column[
+
+Failed with output:
+
+```
+Falsifiable after 9 tests and 5 shrinks
+
+grid width:
+8
+
+grid height:
+8
+
+start position:
+(0, 1)
+
+target position:
+(1, 0)
+```
+
+]
+]
+
+---
+
+template: title_template
+
+# Questions?
+
+[Talk materials & sources](https://github.com/dubzzz/property-based-testing-cpp)
+
+[John Hughes - Don't Write Tests](https://www.youtube.com/watch?v=hXnS_Xjwk2Y)
+
     </textarea>
     <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
     <script>
