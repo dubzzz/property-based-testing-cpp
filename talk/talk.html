@@ -44,11 +44,17 @@
       }
       ol li {
         counter-increment: step-counter;
+        margin-top: 20px;
+        margin-bottom: 20px;
+        color: #d3d3d3;
       }
       ol li:before {
         content: counter(step-counter, upper-roman);
         color: rgb(255, 201, 14);
         float: left;
+      }
+      ol li .active {
+        color: rgb(255, 201, 14);
       }
 
       .header {
@@ -133,6 +139,16 @@ template: title_template
 # Agenda
 
 1. Testing today
+2. Property-based testing
+3. Real example
+
+---
+
+template: title_template
+
+# Agenda
+
+1. .active[Testing today]
 2. Property-based testing
 3. Real example
 
@@ -299,7 +315,6 @@ void sort(BidirectionalIt beg, BidirectionalIt end)
 {
   // Notation: from a (incl.) to b (not incl.)
   //           written &lt;a;b&lt;
-  
   for (auto cur = beg  ; cur != end ; ++cur)
   {
     // All elements in &lt;beg;cur&lt; sorted on &lt;
@@ -354,7 +369,7 @@ template: title_template
 # Agenda
 
 1. Testing today
-2. Property-based testing
+2. .active[Property-based testing]
 3. Real example
 
 ---
@@ -604,7 +619,7 @@ template: title_template
 
 1. Testing today
 2. Property-based testing
-3. Real example
+3. .active[Real example]
 
 ---
 
