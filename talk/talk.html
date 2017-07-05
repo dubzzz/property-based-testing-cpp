@@ -748,21 +748,21 @@ void locate_in_space(Space& space, std::size_t rounds)
 ```cpp
 if (x_min >= x_max || y_min >= y_max) { return; }
     
-std::size_t y0 = space.previous_y();
+std::size_t x0 = space.previous_x();
 auto const& hint = space.hint();
 
-if (hint[0] == 'U')
+if (hint.back() == 'L')
 {
-  y_max = y0 -1;
-  y0 = (y_max + y_min) /2;
+  x_max = x0 -1;
+  x0 = (x_max + x_min) /2;
 }
-else if (hint[0] == 'D')
+else if (hint.back() == 'R')
 {
-  y_min = y0 +1;
-  y0 = (y_max + y_min) /2;
+  x_min = x0 +1;
+  x0 = (x_max + x_min) /2;
 }
 
-// same for x...
+// same for y...
 
 space.move(x0, y0);
 ```
