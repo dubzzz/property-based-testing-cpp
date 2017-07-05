@@ -267,6 +267,32 @@ Example taken from [Google Test](https://github.com/google/googletest/blob/maste
 
 .right-column[
 
+Demonstrate a code by checking that its invariants hold throughout its execution:
+- indices in a loop
+- termination of while-loops or recursions
+- state of relevant variables
+
+Note that must of the time this demonstration is done from a mathematical point of view.
+Computer-related issues such as overflows are quite difficult to take into account and add extra work in such proof.
+
+]
+]
+
+---
+
+.header[
+  # Testing today
+]
+
+.content[
+.left-column[
+  ## Static code analysis
+  ## Example-based
+  ## Proved code
+]
+
+.right-column[
+
 ```cpp
 template &lt;typename BidirectionalIt&gt;
 void sort(BidirectionalIt beg, BidirectionalIt end)
