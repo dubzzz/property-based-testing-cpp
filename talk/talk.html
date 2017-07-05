@@ -322,26 +322,30 @@ Example taken from [Google Test](https://github.com/google/googletest/blob/maste
 .right-column[
 
 ```cpp
-template <class RIterator, class ValueType>
-bool bcontains(RIterator beg, RIterator end,
-               ValueType v) {
-  for (auto d = std::distance(beg, end) ;
-       d != 0 ;
-       d = std::distance(beg, end))
+template &lt;typename BidirectionalIt&gt;
+void sort(BidirectionalIt beg, BidirectionalIt end)
+{
+  // Notation: from a (incl.) to b (not incl.)
+  //           written &lt;a;b&lt;
+  
+  for (auto cur = beg  ; cur != end ; ++cur)
   {
-    // at this point, the following holds:
-    // - for all it strictly before beg: *it <  v
-    // - for all it after or at end    : *it >= v
-
-    auto it = std::next(beg, d/2); // beg <= it < end
-    // distance(beg, end) > distance(beg, it)
-    // distance(beg, end) > distance(it+1, end)
-
-    if (*it == v) return true;
-    else if (*it < v) end = it;
-    else beg = ++it;
+    // All elements in &lt;beg;cur&lt; sorted on &lt;
+    
+    for (auto revcur = cur ;
+         revcur != beg &amp;&amp; *revcur &lt; *std::prev(revcur) ;
+         --revcur)
+    {
+      // All elements in &lt;beg;revcur&lt; sorted on &lt;
+      // All elements in &lt;revcur;cur&lt; sorted on &lt;
+      
+      // For any L in &lt;beg ;revcur&lt;
+      //     and H in &gt;revcur;cur&lt;,
+      // L &lt;= H
+      
+      std::swap(*revcur, *std::prev(revcur));
+    }
   }
-  return false;
 }
 ```
 
