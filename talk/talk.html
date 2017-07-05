@@ -215,6 +215,7 @@ Example taken from [Clang Analyzer](https://clang-analyzer.llvm.org/available_ch
 .left-column[
   ## Static code analysis
   ## Example-based
+  ### Description
 ]
 
 .right-column[
@@ -239,6 +240,8 @@ They can be both automatic or manual.
 .left-column[
   ## Static code analysis
   ## Example-based
+  ### Description
+  ### Example
 ]
 
 .right-column[
@@ -278,7 +281,176 @@ Example taken from [Google Test](https://github.com/google/googletest/blob/maste
 .left-column[
   ## Static code analysis
   ## Example-based
+  ### Description
+  ### Example
+  ### Another example
+]
+
+.right-column[
+
+How would you test a JSON serializer?
+The specification ensures that:
+
+> The result will be a string following the JSON notation.
+
+Example of specification for [W3C](https://www.w3schools.com/js/js_json_stringify.asp)
+
+```cpp
+namespace json {
+
+template <typename ObjectType>
+std::string stringify(ObjectType const&);
+
+}//json
+```
+
+]
+]
+
+---
+
+.header[
+  # Testing today
+]
+
+.content[
+.left-column[
+  ## Static code analysis
+  ## Example-based
+  ### Description
+  ### Example
+  ### Another example
+]
+
+.right-column[
+
+```cpp
+TEST(Stringify, ObjectWithTwoAttributesAandB) {
+  ASSERT_EQ(
+      std::string{"{\"a\":4,\"b\":7}"},
+      json::stringify(MyType()
+          .withA(4)
+          .withB(7)));
+}
+```
+
+]
+]
+
+---
+
+.header[
+  # Testing today
+]
+
+.content[
+.left-column[
+  ## Static code analysis
+  ## Example-based
+  ### Description
+  ### Example
+  ### Another example
+]
+
+.right-column[
+
+```cpp
+TEST(Stringify, ObjectWithTwoAttributesAandB) {
+  ASSERT_EQ(
+      std::string{"{\"a\":4,\"b\":7}"},
+      json::stringify(MyType()
+          .withA(4)
+          .withB(7)));
+}
+```
+
+Unfortunately, the output might be `{"b":7,"a":4}`
+
+]
+]
+
+---
+
+.header[
+  # Testing today
+]
+
+.content[
+.left-column[
+  ## Static code analysis
+  ## Example-based
+  ### Description
+  ### Example
+  ### Another example
+]
+
+.right-column[
+
+```cpp
+TEST(Stringify, ObjectWithTwoAttributesAandB) {
+  ASSERT_EQ(
+      std::string{"{\"a\":4,\"b\":7}"},
+      json::stringify(MyType()
+          .withA(4)
+          .withB(7)));
+}
+```
+
+Unfortunately, the output might be `{"b":7,"a":4}`
+
+Or even `{    "a"   :4,    "b":   7 }`
+
+]
+]
+
+---
+
+.header[
+  # Testing today
+]
+
+.content[
+.left-column[
+  ## Static code analysis
+  ## Example-based
+  ### Description
+  ### Example
+  ### Another example
+]
+
+.right-column[
+
+```cpp
+TEST(Stringify, ObjectWithTwoAttributesAandB) {
+  ASSERT_EQ(
+      std::string{"{\"a\":4,\"b\":7}"},
+      json::stringify(MyType()
+          .withA(4)
+          .withB(7)));
+}
+```
+
+Unfortunately, the output might be `{"b":7,"a":4}`
+
+Or even `{    "a"   :4,    "b":   7 }`
+
+Or even worse `{"a":40E-1,"b":7E0}`
+
+]
+]
+
+---
+
+.header[
+  # Testing today
+]
+
+.content[
+.left-column[
+  ## Static code analysis
+  ## Example-based
   ## Proved code
+  ### Description
 ]
 
 .right-column[
@@ -305,6 +477,8 @@ Computer-related issues such as overflows are quite difficult to take into accou
   ## Static code analysis
   ## Example-based
   ## Proved code
+  ### Description
+  ### Example
 ]
 
 .right-column[
@@ -396,7 +570,7 @@ In mathematics, a property is something like:
 
 > property(x, y, ...) is true
 
-For example f being transitive is defined as follow:
+For example f being transitive (eg.: `f : (x,y) -> x < y`) is defined as follow:
 
 > for all (x, y, z)
 
@@ -488,7 +662,7 @@ Encode and decode pair of functions.
 RC_GTEST_PROP(RomanConversion, FromOfToIsIdentity,
               (int n))
 {
-  RC_ASSERT(from_roman(to_roman(n)));
+  RC_ASSERT(from_roman(to_roman(n)) == n);
 }
 ```
 
