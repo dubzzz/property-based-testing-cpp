@@ -1,7 +1,5 @@
 #include "space.hpp"
 
-v#include "space.hpp"
-
 void locate_in_space(Space& space, std::size_t rounds)
 {
   std::size_t x_min = 0;
