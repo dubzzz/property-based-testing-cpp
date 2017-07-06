@@ -3,13 +3,13 @@
 void locate_in_space(Space& space, std::size_t rounds)
 {
   std::size_t x_min = 0;
-  std::size_t x_max = space.dimension_x();
+  std::size_t x_max = space.dimension_x() -1;
   std::size_t y_min = 0;
-  std::size_t y_max = space.dimension_y();
+  std::size_t y_max = space.dimension_y() -1;
   
   for (std::size_t n {} ; n != rounds && ! space.solved() ; ++n)
   {
-    if (x_min >= x_max || y_min >= y_max) { return; }
+    if (x_min > x_max || y_min > y_max) { return; }
     
     std::size_t x0 = space.previous_x();
     std::size_t y0 = space.previous_y();
@@ -17,7 +17,7 @@ void locate_in_space(Space& space, std::size_t rounds)
     
     if (hint[0] == 'U')
     {
-      y_max = y0;
+      y_max = y0 -1;
       y0 = (y_max + y_min) /2;
     }
     else if (hint[0] == 'D')
@@ -28,7 +28,7 @@ void locate_in_space(Space& space, std::size_t rounds)
     
     if (hint.back() == 'L')
     {
-      x_max = x0;
+      x_max = x0 -1;
       x0 = (x_max + x_min) /2;
     }
     else if (hint.back() == 'R')
@@ -40,4 +40,3 @@ void locate_in_space(Space& space, std::size_t rounds)
     space.move(x0, y0);
   }
 }
-
