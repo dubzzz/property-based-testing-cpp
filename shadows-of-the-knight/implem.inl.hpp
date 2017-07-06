@@ -17,7 +17,7 @@ void locate_in_space(Space& space, std::size_t rounds)
     
     if (hint[0] == 'U')
     {
-      y_max = y0 -1;
+      y_max = y0;
       y0 = (y_max + y_min +1) /2;
     }
     else if (hint[0] == 'D')
@@ -28,7 +28,7 @@ void locate_in_space(Space& space, std::size_t rounds)
     
     if (hint.back() == 'L')
     {
-      x_max = x0 -1;
+      x_max = x0;
       x0 = (x_max + x_min +1) /2;
     }
     else if (hint.back() == 'R')
