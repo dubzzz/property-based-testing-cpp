@@ -873,6 +873,121 @@ Taken from [CodinGame](https://www.codingame.com/training/medium/shadows-of-the-
 
 .right-column[
 
+.building[
+  .bline[ .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] .office-no[] ]
+  .bline[ .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] ]
+  .bline[ .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] ]
+  .bline[ .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] ]
+  .bline[ .office-on[] .office-on[] .office-on[] .office-on[] .office-on[.tux[]] .office-on[] .office-on[] .office-on[] ]
+  .bline[ .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] ]
+  .bline[ .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] ]
+  .bline[ .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] .office-on[.bomb[]] .office-on[] ]
+  .bline[ .office-no[] ]
+]
+
+Inputs:
+
+```
+dimensions = (8, 8)
+xmin, xmax = (0, 8)
+ymin, ymax = (0, 8)
+position   = (4, 4)
+hint       = "DR"
+```
+
+]
+]
+
+---
+
+.header[
+  # Real example
+]
+
+.content[
+.left-column[
+  ## Problem statement
+]
+
+.right-column[
+
+.building[
+  .bline[ .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-no[] ]
+  .bline[ .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] ]
+  .bline[ .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] ]
+  .bline[ .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] ]
+  .bline[ .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] ]
+  .bline[ .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-on[] .office-on[] .office-on[] ]
+  .bline[ .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-on[] .office-on[.tux[]] .office-on[] ]
+  .bline[ .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-on[] .office-on[.bomb[]] .office-on[] ]
+  .bline[ .office-no[] ]
+]
+
+Inputs:
+
+```
+dimensions = (8, 8)
+xmin, xmax = (5, 8)
+ymin, ymax = (5, 8)
+position   = (6, 6)
+hint       = "D"
+```
+
+]
+]
+
+---
+
+.header[
+  # Real example
+]
+
+.content[
+.left-column[
+  ## Problem statement
+]
+
+.right-column[
+
+.building[
+  .bline[ .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-no[] ]
+  .bline[ .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] ]
+  .bline[ .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] ]
+  .bline[ .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] ]
+  .bline[ .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] ]
+  .bline[ .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] ]
+  .bline[ .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] ]
+  .bline[ .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-on[.bomb[] .tux[]] .office-on[] ]
+  .bline[ .office-no[] ]
+]
+
+Inputs:
+
+```
+dimensions = (8, 8)
+xmin, xmax = (5, 8)
+ymin, ymax = (7, 8)
+position   = (6, 7)
+hint       = ""
+```
+
+]
+]
+
+---
+
+.header[
+  # Real example
+]
+
+.content[
+.left-column[
+  ## Problem statement
+  ## Materials
+]
+
+.right-column[
+
 Prototype:
 
 ```cpp
@@ -995,142 +1110,6 @@ else if (hint.back() == 'R')
 // same for y...
 
 space.move(x0, y0);
-```
-
-]
-]
-
----
-
-.header[
-  # Real example
-]
-
-.content[
-.left-column[
-  ## Problem statement
-  ## Materials
-  ## Implementation
-]
-
-.right-column[
-
-.building[
-  .bline[ .office-on[.limit[]] .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] ]
-  .bline[ .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] ]
-  .bline[ .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] ]
-  .bline[ .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] ]
-  .bline[ .office-on[] .office-on[] .office-on[] .office-on[] .office-on[.tux[]] .office-on[] .office-on[] .office-on[] ]
-  .bline[ .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] ]
-  .bline[ .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] ]
-  .bline[ .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] .office-on[] .office-on[.bomb[]] .office-on[] ]
-  .bline[ .office-no[] .office-no[] .office-no[] .office-no[] .office-no[] .office-no[] .office-no[] .office-no[] .office-no[.limit[]] ]
-]
-
-Inputs:
-
-```
-dimensions = (8, 8)
-xmin, xmax = (0, 8)
-ymin, ymax = (0, 8)
-position   = (4, 4)
-hint       = "DR"
-```
-
-Strategy:
-
-```
-xmin, xmax = (5, 8)
-ymin, ymax = (5, 8)
-position   = (6, 6)
-```
-
-]
-]
-
----
-
-.header[
-  # Real example
-]
-
-.content[
-.left-column[
-  ## Problem statement
-  ## Materials
-  ## Implementation
-]
-
-.right-column[
-
-.building[
-  .bline[ .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] ]
-  .bline[ .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] ]
-  .bline[ .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] ]
-  .bline[ .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] ]
-  .bline[ .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] ]
-  .bline[ .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-on[.limit[]] .office-on[] .office-on[] ]
-  .bline[ .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-on[] .office-on[.tux[]] .office-on[] ]
-  .bline[ .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-on[] .office-on[.bomb[]] .office-on[] ]
-  .bline[ .office-no[] .office-no[] .office-no[] .office-no[] .office-no[] .office-no[] .office-no[] .office-no[] .office-no[.limit[]] ]
-]
-
-Inputs:
-
-```
-dimensions = (8, 8)
-xmin, xmax = (5, 8)
-ymin, ymax = (5, 8)
-position   = (6, 6)
-hint       = "D"
-```
-
-Strategy:
-
-```
-xmin, xmax = (5, 8)
-ymin, ymax = (7, 8)
-position   = (6, 7)
-```
-
-]
-]
-
----
-
-.header[
-  # Real example
-]
-
-.content[
-.left-column[
-  ## Problem statement
-  ## Materials
-  ## Implementation
-]
-
-.right-column[
-
-.building[
-  .bline[ .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] ]
-  .bline[ .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] ]
-  .bline[ .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] ]
-  .bline[ .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] ]
-  .bline[ .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] ]
-  .bline[ .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] ]
-  .bline[ .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] ]
-  .bline[ .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-off[] .office-on[.limit[] .bomb[] .tux[]] .office-on[] ]
-  .bline[ .office-no[] .office-no[] .office-no[] .office-no[] .office-no[] .office-no[] .office-no[] .office-no[] .office-no[.limit[]] ]
-]
-
-Inputs:
-
-```
-dimensions = (8, 8)
-xmin, xmax = (5, 8)
-ymin, ymax = (7, 8)
-position   = (6, 7)
-hint       = ""
 ```
 
 ]
