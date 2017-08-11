@@ -33,6 +33,7 @@ enable_testing()
 include_directories(SYSTEM ${GTEST_INCLUDE_DIRS})
 include_directories(SYSTEM ${RAPIDCHECK_INCLUDE_DIRS})
 
+add_subdirectory(musicplayer)
 add_subdirectory(shadows-of-the-knight)
 add_subdirectory(string-contains)
 
