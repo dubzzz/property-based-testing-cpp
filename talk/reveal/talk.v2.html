@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Property-based testing -- by Nicolas DUBIEN</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/reveal.js/3.0.0/css/reveal.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/reveal.js/3.0.0/css/theme/black.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/reveal.js/3.0.0/lib/css/zenburn.css">
+    <link rel="stylesheet" href="reveal-style.css">
+  </head>
+  <body>
+    <div class="reveal">
+        <div class="slides">
+            <section>
+                <section>
+                    <h1>Property-based testing</h1>
+                    <h2 class="more">Using <a href="https://github.com/emil-e/rapidcheck/" target="_blank">RapidCheck</a></h2>
+                </section>
+            </section>
+            <section>
+                <section>
+                    <h2>Agenda</h2>
+                    <ol class="agenda">
+                        <li>Test as debt</li>
+                        <li>Limited coverage</li>
+                        <li>Property-based testing in action</li>
+                    </ul>
+                </section>
+            </section>
+            <section>
+                <section>
+                    <h2>Agenda</h2>
+                    <ol class="agenda">
+                        <li class="active">Test as debt</li>
+                        <li>Limited coverage</li>
+                        <li>Property-based testing in action</li>
+                    </ul>
+                </section>
+                <section>
+                    <ul class="left-menu">
+                        <li>Observation</li>
+                    </ul>
+                    <div class="content">
+                        <p>We want to test for various reasons:
+                            <span class="fragment">check for possible regressions,</span>
+                            <span class="fragment">early bug detection,</span>
+                            <span class="fragment">development logic,</span>
+                            <span class="fragment">documentation, ...</span>
+                        </p>
+                        <p class="fragment">We base our faith in tests on the following assumptions:</p>
+                        <ul>
+                            <li class="fragment">up-to-date</li>
+                            <li class="fragment">as simple as possible</li>
+                            <li class="fragment">evolve with the code</li>
+                            <li class="fragment">wide coverage</li>
+                            <li class="fragment">an helper not an end in itself</li>
+                        </ul>
+                    </div>
+                </section>
+                <section>
+                    <ul class="left-menu">
+                        <li>Observation</li>
+                    </ul>
+                    <div class="content">
+                        <p>But what if it was:</p>
+                        <ul>
+                            <li>costly to maintain</li>
+                            <li>blocking or limiting possible improvments</li>
+                        </ul>
+                    </div>
+                </section>
+                <section>
+                    <ul class="left-menu">
+                        <li>Observation</li>
+                        <li>Statement</li>
+                    </ul>
+                    <div class="content">
+                        <p>How would you test a JSON serializer given the following specification?</p>
+                        <p class="quote">Converts a value to JSON notation representing it.</p>
+                        <p>Such specification is the one described by <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify" title="Mozilla Foundation web docs" target="_blank">Mozilla Foundation web docs</a>
+                            for `JSON.stringify` of JavaScript.
+                            The exhaustive specification is available on <a href="http://www.ecma-international.org/ecma-262/5.1/#sec-15.12.3" title="ECMA-262" target="_blank">ECMA-262</a>.
+                        </p>
+                        <pre><code class="hljs" data-trim>
+namespace json {
+    
+    class JsonObject;
+    class JsonArray : public JsonObject;
+    class JsonDictionary : public JsonObject;
+    
+    std::string stringify(JsonObject const&);
+    
+}//json
+                        </code></pre>
+                </section>
+                <section>
+                    <ul class="left-menu">
+                        <li>Observation</li>
+                        <li>Statement</li>
+                        <li>Easy</li>
+                    </ul>
+                    <div class="content">
+                        <p>Easy, isn't it?</p>
+                        <pre class="fragment"><code class="hljs" data-trim>
+TEST(Stringify, ObjectWithTwoAttributesAandB) {
+    auto instanceWithAandB = json::JsonDictionary {}
+            .with("a", json::JsonInteger {4})
+            .with("b", json::JsonInteger {7});
+    
+    ASSERT_EQ(
+        std::string{"{\"a\":4,\"b\":7}"},
+        json::stringify(instanceWithAandB));
+}
+                        </code></pre>
+                </section>
+                <section>
+                    <ul class="left-menu">
+                        <li>Observation</li>
+                        <li>Statement</li>
+                        <li>Easy</li>
+                        <li><ul>Not really
+                            <li>Key ordering</li>
+                        </ul></li>
+                    </ul>
+                    <div class="content">
+                        <p>No assumptions on key-ordering</p>
+                        <p>Following fragments are equally probable:</p>
+                        <pre><code class="hljs" data-trim>
+{"a":4,"b":7}
+
+{"b":7,"a":4}
+                        </code></pre>
+                        <p class="fragment">Why can it be the case?</p>
+                        <ul class="fragment">
+                            <li>way key-value pairs are stored: vector of pairs, map, hashmap...</li>
+                            <li>way key-value pairs are iterated</li>
+                        </ul>
+                </section>
+                <section>
+                    <ul class="left-menu">
+                        <li>Observation</li>
+                        <li>Statement</li>
+                        <li>Easy</li>
+                        <li><ul>Not really
+                            <li>Key ordering</li>
+                            <li>Deterministic</li>
+                        </ul></li>
+                    </ul>
+                    <div class="content">
+                        <p>No assumptions on the deterministic treatment of keys</p>
+                        <p class="fragment">Why can it be the case?</p>
+                        <ul class="fragment">
+                            <li>it can be address based in some way</li>
+                        </ul>
+                </section>
+                <section>
+                    <ul class="left-menu">
+                        <li>Observation</li>
+                        <li>Statement</li>
+                        <li>Easy</li>
+                        <li><ul>Not really
+                            <li>Key ordering</li>
+                            <li>Deterministic</li>
+                            <li>Ident</li>
+                        </ul></li>
+                    </ul>
+                    <div class="content">
+                        <p>No assumptions on the number of spaces, tabs or line feeds</p>
+                        <p>Following fragments are equally probable:</p>
+                        <pre><code class="hljs" data-trim>
+{"a"  :4   ,  "b"  :7     }
+
+{"a":4                    ,"b":7                    }
+
+{
+    "a" : 4,
+    "b" : 7
+}
+                        </code></pre>
+                        <p class="fragment">Why can it be the case?</p>
+                        <ul class="fragment">
+                            <li>optimizations: several threads or even processes can feed the output string</li>
+                        </ul>
+                </section>
+                <section>
+                    <ul class="left-menu">
+                        <li>Observation</li>
+                        <li>Statement</li>
+                        <li>Easy</li>
+                        <li><ul>Not really
+                            <li>Key ordering</li>
+                            <li>Deterministic</li>
+                            <li>Ident</li>
+                            <li>Notation</li>
+                        </ul></li>
+                    </ul>
+                    <div class="content">
+                        <p>No assumptions on notation</p>
+                        <p>Following fragments are equally probable:</p>
+                        <pre><code class="hljs" data-trim>
+{"a":4E0,"b":7E0}
+
+{"a":40E-1,"b":7E0}
+
+{"\u0061":4,"b":7}
+                        </code></pre>
+                        <p class="fragment">Why can it be the case?</p>
+                        <ul class="fragment">
+                            <li>more compact outputs for some values: 3E6 instead of 3000000</li>
+                            <li>not area specific characters</li>
+                        </ul>
+                </section>
+            </section>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/reveal.js/3.0.0/lib/js/head.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/reveal.js/3.0.0/js/reveal.min.js"></script>
+    <script src="reveal-config.js"></script>
+  </body>
+</html>

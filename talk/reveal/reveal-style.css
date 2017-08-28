@@ -1,0 +1,120 @@
+.reveal h1, .reveal h2, .reveal h3, .reveal h4, .reveal h5, .reveal h6 {
+    font-weight: normal;
+    text-transform: none; 
+}
+
+.reveal h1 + .more, .reveal h2 + .more, .reveal h3 + .more, .reveal h4 + .more, .reveal h5 + .more, .reveal h6 + .more {
+    margin-top: -20px;
+}
+
+.reveal .more {
+    color: #777872;
+}
+
+.reveal a {
+    color: rgb(249, 38, 114);
+    text-decoration: none;
+}
+.reveal a:hover {
+    color: rgb(255, 201, 14);
+    text-decoration: none;
+}
+
+li {
+    color: #d3d3d3;
+}
+
+li.active, .left-menu > li:last-child, .left-menu > li:last-child > ul > li:last-child {
+    color: rgb(255, 201, 14);
+}
+
+.reveal ol {
+    counter-reset: step-counter;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    text-align: center;
+}
+
+.reveal ol li {
+    counter-increment: step-counter;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.reveal ol li:before {
+    content: counter(step-counter, upper-roman);
+    color: rgb(255, 201, 14);
+    float: left;
+}
+
+.reveal ul.left-menu {
+    float: left;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    width: 20%;
+}
+
+.reveal ul.left-menu ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+.reveal ul.left-menu > li {
+    font-size: 0.9em;
+    padding-top: 20px; 
+    padding-bottom: 20px; 
+}
+
+.reveal ul.left-menu > li li {
+    font-size: 0.7em;
+}
+
+.reveal ul.left-menu > li li:nth-child(1) {
+    padding-top: 20px;
+}
+
+.reveal .content {
+    float: right;
+    width: 70%;
+    padding-left: 1em;
+    padding-right: 1em;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    text-align: justify;
+    background: #f3f3f3;
+    color: #272822;
+    font-size: 0.8em;
+}
+
+.reveal .content h1, .reveal .content h2, .reveal .content h3, .reveal .content h4, .reveal .content h5, .reveal .content h6, .reveal .content li {
+    color: #272822;
+}
+
+.reveal .content li {
+    text-align: justify;
+}
+
+.reveal .content blockquote, .reveal .content p.quote {
+    margin: 0;
+    text-align: justify;
+    font-style: italic;
+    margin-right: 1em;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding-left: 1em;
+    font-size: 0.9em;
+    background-color: navajowhite;
+}
+.reveal .content blockquote::before, .reveal .content p.quote::before {
+    content: '\201C';
+    font-size: 2em;
+    float: left;
+    color: #777872;
+    margin-left: -1em;
+}
