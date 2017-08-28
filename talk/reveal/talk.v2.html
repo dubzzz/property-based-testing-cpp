@@ -123,17 +123,12 @@ TEST(Stringify, ObjectWithTwoAttributesAandB) {
                         </ul></li>
                     </ul>
                     <div class="content">
-                        <p>No assumptions on key-ordering</p>
-                        <p>Following fragments are equally probable:</p>
-                        <pre><code class="hljs" data-trim>
-{"a":4,"b":7}
-
-{"b":7,"a":4}
-                        </code></pre>
-                        <p class="fragment">Why can it be the case?</p>
-                        <ul class="fragment">
-                            <li>way key-value pairs are stored: vector of pairs, map, hashmap...</li>
-                            <li>way key-value pairs are iterated</li>
+                        <pre class="fragment"><code class="hljs" data-trim>{"a":4,"b":7}</code></pre>
+                        <pre class="fragment"><code class="hljs" data-trim>{"b":7,"a":4}</code></pre>
+                        <p class="fragment">Implementation choice:</p>
+                        <ul>
+                            <li class="fragment">way key-value pairs are stored: vector of pairs, map, hashmap...</li>
+                            <li class="fragment">way key-value pairs are iterated</li>
                         </ul>
                 </section>
                 <section>
@@ -147,11 +142,10 @@ TEST(Stringify, ObjectWithTwoAttributesAandB) {
                         </ul></li>
                     </ul>
                     <div class="content">
-                        <p>No assumptions on the deterministic treatment of keys</p>
-                        <p class="fragment">Why can it be the case?</p>
-                        <ul class="fragment">
-                            <li>address based in some way</li>
-                            <li>depend on previous calls</li>
+                        <p class="fragment">Implementation choice:</p>
+                        <ul>
+                            <li class="fragment">address based in some way</li>
+                            <li class="fragment">depend on previous calls</li>
                         </ul>
                 </section>
                 <section>
@@ -166,21 +160,17 @@ TEST(Stringify, ObjectWithTwoAttributesAandB) {
                         </ul></li>
                     </ul>
                     <div class="content">
-                        <p>No assumptions on the number of spaces, tabs or line feeds</p>
-                        <p>Following fragments are equally probable:</p>
-                        <pre><code class="hljs" data-trim>
-{"a"  :4   ,  "b"  :7     }
-
-{"a":4                    ,"b":7                    }
-
+                        <pre class="fragment"><code class="hljs" data-trim>{"a"  :4   ,  "b"  :7     }</code></pre>
+                        <pre class="fragment"><code class="hljs" data-trim>{"a":4                    ,"b":7                    }</code></pre>
+                        <pre class="fragment"><code class="hljs" data-trim>
 {
     "a" : 4,
     "b" : 7
 }
                         </code></pre>
-                        <p class="fragment">Why can it be the case?</p>
-                        <ul class="fragment">
-                            <li>optimizations: several threads or even processes can feed the output string</li>
+                        <p class="fragment">Implementation choice:</p>
+                        <ul>
+                            <li class="fragment">optimizations: several threads or even processes can feed the output string</li>
                         </ul>
                 </section>
                 <section>
@@ -196,19 +186,13 @@ TEST(Stringify, ObjectWithTwoAttributesAandB) {
                         </ul></li>
                     </ul>
                     <div class="content">
-                        <p>No assumptions on notation</p>
-                        <p>Following fragments are equally probable:</p>
-                        <pre><code class="hljs" data-trim>
-{"a":4E0,"b":7E0}
-
-{"a":40E-1,"b":7E0}
-
-{"\u0061":4,"b":7}
-                        </code></pre>
-                        <p class="fragment">Why can it be the case?</p>
-                        <ul class="fragment">
-                            <li>more compact outputs for some values: 3E6 instead of 3000000</li>
-                            <li>not area specific characters</li>
+                        <pre class="fragment"><code class="hljs" data-trim>{"a":4E0,"b":7E0}</code></pre>
+                        <pre class="fragment"><code class="hljs" data-trim>{"a":40E-1,"b":7E0}</code></pre>
+                        <pre class="fragment"><code class="hljs" data-trim>{"\u0061":4,"b":7}</code></pre>
+                        <p class="fragment">Implementation choice:</p>
+                        <ul>
+                            <li class="fragment">more compact outputs for some values: 3E6 instead of 3000000</li>
+                            <li class="fragment">not area specific characters</li>
                         </ul>
                 </section>
             </section>
