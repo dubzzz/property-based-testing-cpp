@@ -81,14 +81,15 @@
                             for `JSON.stringify` of JavaScript.
                             The exhaustive specification is available on <a href="http://www.ecma-international.org/ecma-262/5.1/#sec-15.12.3" title="ECMA-262" target="_blank">ECMA-262</a>.
                         </p>
-                        <pre><code class="hljs" data-trim>
+                        <pre><code class="hljs cpp" data-trim>
 namespace json {
     
     class JsonObject;
     class JsonArray : public JsonObject;
     class JsonDictionary : public JsonObject;
     
-    std::string stringify(JsonObject const&);
+    std::string stringify(JsonObject const&amp;);
+    std::unique_ptr&lt;JsonObject&gt; parse(std::string const&amp;);
     
 }//json
                         </code></pre>
@@ -101,7 +102,7 @@ namespace json {
                     </ul>
                     <div class="content">
                         <p>Easy, isn't it?</p>
-                        <pre class="fragment"><code class="hljs" data-trim>
+                        <pre class="fragment"><code class="hljs cpp" data-trim>
 TEST(Stringify, ObjectWithTwoAttributesAandB) {
     auto instanceWithAandB = json::JsonDictionary {}
             .with("a", json::JsonInteger {4})
@@ -194,6 +195,47 @@ TEST(Stringify, ObjectWithTwoAttributesAandB) {
                             <li class="fragment">more compact outputs for some values: 3E6 instead of 3000000</li>
                             <li class="fragment">not area specific characters</li>
                         </ul>
+                </section>
+                <section>
+                    <ul class="left-menu">
+                        <li>Observation</li>
+                        <li>Statement</li>
+                        <li>Easy</li>
+                        <li>Not really</li>
+                        <li>Property</li>
+                    </ul>
+                    <div class="content">
+                        <p>Any idea?</p>
+                        <pre class="fragment"><code class="hljs cpp" data-trim>
+namespace json {
+
+    std::string stringify(JsonObject const&amp;);
+    std::unique_ptr&lt;JsonObject&gt; parse(std::string const&amp;);
+    
+}//json
+                        </code></pre>
+                </section>
+                <section>
+                    <ul class="left-menu">
+                        <li>Observation</li>
+                        <li>Statement</li>
+                        <li>Easy</li>
+                        <li>Not really</li>
+                        <li>Property</li>
+                    </ul>
+                    <div class="content">
+                        <p>
+                            Taking the object resulting from the conversion of the JsonObject to a string then back to a JsonObject
+                            should be equivalent to take the original instance itself.
+                        </p>
+                        <pre><code class="hljs cpp" data-trim>
+RC_GTEST_PROP(Stringify,
+              StringifyThenParseIsIdentity,
+              (json::JsonObject const&amp; elt))
+{
+    RC_ASSERT(*json::parse(json::stringify(elt)) == elt);
+}
+                        </code></pre>
                 </section>
             </section>
         </div>
