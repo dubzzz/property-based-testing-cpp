@@ -20,6 +20,31 @@
     text-decoration: none;
 }
 
+.reveal blockquote, .reveal p.quote {
+    margin: 0;
+    text-align: justify;
+    font-style: italic;
+    margin-right: 1em;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding-left: 1em;
+    font-size: 0.9em;
+    border-left: 1px navajowhite solid;
+}
+.reveal blockquote::before, .reveal p.quote::before {
+    content: '\201C';
+    font-size: 2em;
+    float: left;
+    color: white;
+    margin-left: -1em;
+}
+
+em {
+    color: rgb(255, 201, 14);
+    font-style: normal;
+    font-weight: normal;
+}
+
 li {
     color: #d3d3d3;
 }

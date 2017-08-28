@@ -16,6 +16,40 @@
                     <h1>Property-based testing</h1>
                     <h2 class="more">Using <a href="https://github.com/emil-e/rapidcheck/" target="_blank">RapidCheck</a></h2>
                 </section>
+                <section>
+                    <p>Test properties instead of isolated cases</p>
+                </section>
+                <section>
+                    <p class="quote">
+                        for all <em>(x, y, ...)</em>
+                        <br/>such that <em>precondition(x, y, ...)</em> holds
+                        <br/><em>property(x, y, ...)</em> is true
+                    </p>
+                </section>
+                <section>
+                    <p>Example:</p>
+                    <p class="quote">
+                        for all <em>a and b integers</em>
+                        <br/>such that <em>a &lt;= b</em> holds
+                        <br/><em>a &lt;= mean(a,b) &lt;= b</em> is true
+                    </p>
+                </section>
+                <section>
+                    <p>Example:</p>
+                    <p class="quote">
+                        for all <em>array</em>
+                        <br/><span class="fragment">- <em>sorted(array).all(current &lt;= next)</em></span>
+                        <br/><span class="fragment">- <em>sorted(array).length == array.length</em></span>
+                        <br/><span class="fragment">- <em>arity of(value in sorted(array)) == arity of(value in array)</em></span>
+                        <br/><span class="fragment">are true</span>
+                    </p>
+                </section>
+                <section>
+                    <p>Use the scope of all possible inputs</p>
+                </section>
+                <section>
+                    <p>Shrink the input in case of failure</p>
+                </section>
             </section>
             <section>
                 <section>
