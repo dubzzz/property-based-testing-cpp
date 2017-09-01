@@ -79,3 +79,58 @@ li.active, .left-menu > li:last-child, .left-menu > li:last-child > ul > li:last
     font-size: 0.5em;
     color: #777872;
 }
+
+.building {
+}
+
+.building .bline {
+    display: block;
+}
+
+.building .bline .office-off, .building .bline .office-on, .building .bline .office-on2, .building .bline .office-no {
+    display: inline-block;
+    position: relative;
+    width: 32px;
+    height: 32px;
+}
+
+.building .bline .office-on {
+    border: 1px solid rgb(255, 201, 14);
+    background-color: rgb(249, 38, 114);
+}
+
+.building .bline .office-on2 {
+    border: 1px solid rgb(255, 201, 14);
+    background-color: rgb(163, 73, 164);
+}
+
+.building .bline .office-off {
+    border: 1px solid rgb(255, 201, 14);
+    background-color: #f3f3f3;
+}
+
+.building .bline .office-no {
+    border: 1px solid #f3f3f3;
+    background-color: #f3f3f3;
+}
+
+.building .bline .tux, .building .bline .bomb, .building .bline .limit {
+    display: inline-block;
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    left: 0px;
+    top: 0px;
+}
+
+.building .bline .tux {
+    background-image: url(tux-32.png);
+}
+
+.building .bline .bomb {
+    background-image: url(bomb-32.png);
+}
+
+.building .bline .limit {
+    background-image: url(limit-32.png);
+}
