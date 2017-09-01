@@ -759,6 +759,84 @@ $: hint       = ""
                     <p class="quote">Before each [guess], the heat-signature device will provide Batman with the direction of the bombs based on Batman current position.</p>
                     <p class="vsmallnote">Taken from <a href="https://www.codingame.com/training/medium/shadows-of-the-knight-episode-1" target="_blank" title="CodinGame">CodinGame</a></p>
                 </section>
+                <section>
+                    <h3>Prototypes</h3>
+                </section>
+                <section>
+                    <h4>Expected answer</h4>
+                    <pre><code class="hljs cpp" data-trim>void locate_in_space(Space&amp; space, std::size_t rounds);</code></pre>
+                </section>
+                <section>
+                    <h4>Helper to read from CodinGame</h4>
+                    <pre><code class="hljs cpp" data-trim>
+class Space
+{
+public:
+    // dimensions of the grid
+    std::size_t dimension_x() const;
+    std::size_t dimension_y() const;
+    // last known location
+    std::size_t previous_x() const;
+    std::size_t previous_y() const;
+    // direction to the target (U / D, L / R)
+    std::string const& hint() const;
+    // is it the position of the target?
+    bool solved() const;
+    // update position
+    void move(std::size_t x, std::size_t y);
+};
+                    </code></pre>
+                </section>
+                <section>
+                    <h3>Implementation</h3>
+                </section>
+                <section>
+                    <pre><code class="hljs cpp" data-trim>
+void locate_in_space(Space&amp; space, std::size_t rounds)
+{
+    std::size_t x_min = 0;
+    std::size_t x_max = space.dimension_x();
+    std::size_t y_min = 0;
+    std::size_t y_max = space.dimension_y();
+    for (std::size_t n {} ;
+        n != rounds &amp;&amp; ! space.solved() ;
+        ++n)
+    {
+        // content on next slide
+    }
+}
+                    </code></pre>
+                </section>
+                <section>
+                    <pre><code class="hljs cpp" data-trim>
+if (x_min >= x_max || y_min >= y_max) { return; }
+std::size_t x0 = space.previous_x();
+auto const&amp; hint = space.hint();
+if (hint.back() == 'L')
+{
+    x_max = x0 -1;
+    x0 = (x_max + x_min) /2;
+}
+else if (hint.back() == 'R')
+{
+    x_min = x0 +1;
+    x0 = (x_max + x_min) /2;
+}
+// same for y...
+space.move(x0, y0);                            
+                    </code></pre>
+                </section>
+                <section>
+                    <h3>Results</h3>
+                </section>
+                <section>
+                    <h4>User tests</h4>
+                    <img src="codingame-user-tests.png" alt="User tests results" />
+                </section>
+                <section>
+                    <h4>Evaluation tests</h4>
+                    <img src="codingame-eval-tests.png" alt="Evaluation tests results" />
+                </section>
             </section>
             <section>
                 <section>
