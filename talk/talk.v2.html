@@ -1439,6 +1439,99 @@ $: hint       = ""
                         <li class="active">Property-based testing in action</li>
                     </ol>
                 </section>
+                <section>
+                    <h3>Bounded output</h3>
+                </section>
+                <section>
+                    <p class="quote">
+                        for all a and b integers,
+                        <br/>the average of a and b is between a and b
+                    </p>
+                    <pre><code class="hljs cpp" data-trim>
+RC_GTEST_PROP(Average, ShouldBeBetweenAAndB,
+              (int a, int b))
+{
+    RC_PRE(a &lt;= b);
+    RC_ASSERT(a &lt;= average(a,b) &amp;&amp; average(a,b) &lt;= b);
+}
+                    </code></pre>
+                    <p class="vsmallnote">Assumptions concerning the range in which will be the output</p>
+                </section>
+                <section>
+                    <h3>Limited set of inputs</h3>
+                </section>
+                <section>
+                    <p class="quote">
+                        for all (a, b, c) strings,
+                        <br/>b is a substring of the concatenation of a, b and c
+                    </p>
+                    <pre><code class="hljs cpp" data-trim>
+RC_GTEST_PROP(Contains,
+              ShouldBeTrueOnAllStringsBuiltAroundPattern,
+              (std::string a,
+               std::string b,
+               std::string c))
+{
+    RC_ASSERT(contains(b, a + b + c));
+}
+                    </code></pre>
+                    <p class="vsmallnote">Subset of inputs having a trivial answer</p>
+                </section>
+                <section>
+                    <h3>Compare to another implementation</h3>
+                </section>
+                <section>
+                    <p class="quote">
+                        for all data - sorted array of integers - and n - integer,
+                        <br/>the result of the linear search of n in data is the same as the one of the binary search of n in data
+                    </p>
+                    <pre><code class="hljs cpp" data-trim>
+RC_GTEST_PROP(FindDicho, ShouldBeSameAsSimpler,
+              (std::vector&lt;int&gt; data, int n))
+{
+    std::sort(data.begin(), data.end());
+    RC_ASSERT(find_dicho(data, n) == find_linear(data, n));
+}
+                    </code></pre>
+                    <p class="vsmallnote">Another algorithm - in general, simpler to implement - exists</p>
+                </section>
+                <section>
+                    <h3>Combination of functions</h3>
+                </section>
+                <section>
+                    <h4>Round trip</h4>
+                </section>
+                <section>
+                    <p class="quote">
+                        for all n integer,    
+                        <br/>the integer equivalent of the roman representation of n is itself
+                    </p>
+                    <pre><code class="hljs cpp" data-trim>
+RC_GTEST_PROP(RomanConversion, FromOfToIsIdentity,
+              (int n))
+{
+    RC_ASSERT(from_roman(to_roman(n)) == n);
+}
+                    </code></pre>
+                    <p class="vsmallnote">Encode and decode pair of functions</p>
+                </section>
+                <section>
+                    <h4>More general combination</h4>
+                </section>
+                <section>
+                    <p class="quote">
+                        for all a and b integers,       
+                        <br/>lcm(a,b) * gcd(a,b) = a * b
+                    </p>
+                    <pre><code class="hljs cpp" data-trim>
+RC_GTEST_PROP(LcmGcd, RelationBetweenLcmAndGcd,
+              (int a, int b))
+{
+    RC_ASSERT(lcm(a,b) * gcd(a,b) = a * b);
+}
+                    </code></pre>
+                    <p class="vsmallnote">Some properties hold given a combination of multiple functions</p>
+                </section>
             </section>
         </div>
     </div>
