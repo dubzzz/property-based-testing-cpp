@@ -74,72 +74,8 @@ li.active, .left-menu > li:last-child, .left-menu > li:last-child > ul > li:last
     float: left;
 }
 
-.reveal ul.left-menu {
-    float: left;
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    text-align: center;
-    width: 20%;
-}
-
-.reveal ul.left-menu ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    text-align: center;
-}
-
-.reveal ul.left-menu > li {
-    font-size: 0.9em;
-    padding-top: 20px; 
-    padding-bottom: 20px; 
-}
-
-.reveal ul.left-menu > li li {
-    font-size: 0.7em;
-}
-
-.reveal ul.left-menu > li li:nth-child(1) {
-    padding-top: 20px;
-}
-
-.reveal .content {
-    float: right;
-    width: 70%;
-    padding-left: 1em;
-    padding-right: 1em;
-    padding-top: 1em;
-    padding-bottom: 1em;
-    text-align: justify;
-    background: #f3f3f3;
-    color: #272822;
-    font-size: 0.8em;
-}
-
-.reveal .content h1, .reveal .content h2, .reveal .content h3, .reveal .content h4, .reveal .content h5, .reveal .content h6, .reveal .content li {
-    color: #272822;
-}
-
-.reveal .content li {
-    text-align: justify;
-}
-
-.reveal .content blockquote, .reveal .content p.quote {
-    margin: 0;
-    text-align: justify;
+.reveal .vsmallnote {
     font-style: italic;
-    margin-right: 1em;
-    margin-top: 20px;
-    margin-bottom: 20px;
-    padding-left: 1em;
-    font-size: 0.9em;
-    background-color: navajowhite;
-}
-.reveal .content blockquote::before, .reveal .content p.quote::before {
-    content: '\201C';
-    font-size: 2em;
-    float: left;
+    font-size: 0.5em;
     color: #777872;
-    margin-left: -1em;
 }

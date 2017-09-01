@@ -20,6 +20,9 @@
                     <p>Test properties instead of isolated cases</p>
                 </section>
                 <section>
+                    <p>Shrink the input in case of failure</p>
+                </section>
+                <section>
                     <p class="quote">
                         for all <em>(x, y, ...)</em>
                         <br/>such that <em>precondition(x, y, ...)</em> holds
@@ -47,9 +50,6 @@
                 <section>
                     <p>Use the scope of all possible inputs</p>
                 </section>
-                <section>
-                    <p>Shrink the input in case of failure</p>
-                </section>
             </section>
             <section>
                 <section>
@@ -58,7 +58,7 @@
                         <li>Test as debt</li>
                         <li>Limited coverage</li>
                         <li>Property-based testing in action</li>
-                    </ul>
+                    </ol>
                 </section>
             </section>
             <section>
@@ -68,54 +68,106 @@
                         <li class="active">Test as debt</li>
                         <li>Limited coverage</li>
                         <li>Property-based testing in action</li>
+                    </ol>
+                </section>
+                <section>
+                    <h3>Observation</h3>
+                </section>
+                <section>
+                    <h4>Why do we tests?</h4>
+                    <ul>
+                        <li class="fragment">check for possible regressions,</li>
+                        <li class="fragment">early bug detection,</li>
+                        <li class="fragment">development logic,</li>
+                        <li class="fragment">documentation, ...</li>
                     </ul>
                 </section>
                 <section>
-                    <ul class="left-menu">
-                        <li>Observation</li>
+                    <h4>Our faith in tests:</h4>
+                    <ul>
+                        <li class="fragment">up-to-date</li>
+                        <li class="fragment">as simple as possible</li>
+                        <li class="fragment">evolve with the code</li>
+                        <li class="fragment">wide coverage</li>
+                        <li class="fragment">an helper not an end in itself</li>
                     </ul>
-                    <div class="content">
-                        <p>We want to test for various reasons:
-                            <span class="fragment">check for possible regressions,</span>
-                            <span class="fragment">early bug detection,</span>
-                            <span class="fragment">development logic,</span>
-                            <span class="fragment">documentation, ...</span>
-                        </p>
-                        <p class="fragment">We base our faith in tests on the following assumptions:</p>
-                        <ul>
-                            <li class="fragment">up-to-date</li>
-                            <li class="fragment">as simple as possible</li>
-                            <li class="fragment">evolve with the code</li>
-                            <li class="fragment">wide coverage</li>
-                            <li class="fragment">an helper not an end in itself</li>
-                        </ul>
-                    </div>
                 </section>
                 <section>
-                    <ul class="left-menu">
-                        <li>Observation</li>
-                    </ul>
-                    <div class="content">
-                        <p>But what if it was:</p>
-                        <ul>
-                            <li>costly to maintain</li>
-                            <li>blocking or limiting possible improvments</li>
-                        </ul>
-                    </div>
+                    <pre><code class="hljs cpp" data-trim>
+TEST(PrettyWriter, SetIndent) {
+    StringBuffer buffer;
+    PrettyWriter&lt;StringBuffer&gt; writer(buffer);
+    writer.SetIndent('\t', 1);
+    Reader reader;
+    StringStream s(kJson);
+    reader.Parse(s, writer);
+    EXPECT_STREQ(
+        "{\n"
+        "\t\"hello\": \"world\",\n"
+        "\t\"t\": true,\n"
+        "\t\"f\": false,\n"
+        "\t\"n\": null,\n"
+        "\t\"i\": 123,\n"
+        "\t\"pi\": 3.1416,\n"
+        "\t\"a\": [\n"
+        "\t\t1,\n"
+        "\t\t2,\n"
+        "\t\t3,\n"
+        "\t\t-1\n"
+        "\t],\n"
+        "\t\"u64\": 1234567890123456789,\n"
+        "\t\"i64\": -1234567890123456789\n"
+        "}",
+        buffer.GetString());
+}
+                    </code></pre>
+                    <p class="vsmallnote">Example taken from <a href="https://github.com/miloyip/rapidjson/blob/master/test/unittest/prettywritertest.cpp" target="_blank" title="RapidJSON">RapidJSON</a></p>
                 </section>
                 <section>
-                    <ul class="left-menu">
-                        <li>Observation</li>
-                        <li>Statement</li>
+                    <pre><code class="hljs" data-trim>
+Title: Add an icon to the Firefox toolbar
+
+Steps:
+
+1. Right click on the toolbar, and select "Customize" from the
+   dropdown menu (or go to main menu->View->Toolbar->Customize...).
+2. A "Customize Toolbar" dialog box containing icons/spaces should
+   be shown.
+3. Select the Print icon using your mouse.
+4. Drag the Print icon to the toolbar and place it to the right of
+   the URL bar (between the end of the URL bar and the beginning of
+   the search box).
+5. Click "Done" to close the Customize Toolbar dialog box.
+6. Click the Print icon you just added.
+
+Expected Results:
+
+1. The Print icon should be added to the toolbar in the place that
+   you specified.
+2. Clicking the Print icon should launch the Print dialog box.
+                    </code></pre>
+                    <p class="vsmallnote">Example taken from <a href="https://developer.mozilla.org/en-US/docs/Mozilla/QA/Test_Case_Writing_Primer" target="_blank" title="Mozilla QA">Mozilla QA</a></p>
+                </section>
+                <section>
+                    <p>But what if it was:</p>
+                    <ul>
+                        <li class="fragment">costly to maintain</li>
+                        <li class="fragment">limiting possible improvments</li>
                     </ul>
-                    <div class="content">
-                        <p>How would you test a JSON serializer given the following specification?</p>
-                        <p class="quote">Converts a value to JSON notation representing it.</p>
-                        <p>Such specification is the one described by <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify" title="Mozilla Foundation web docs" target="_blank">Mozilla Foundation web docs</a>
-                            for `JSON.stringify` of JavaScript.
-                            The exhaustive specification is available on <a href="http://www.ecma-international.org/ecma-262/5.1/#sec-15.12.3" title="ECMA-262" target="_blank">ECMA-262</a>.
-                        </p>
-                        <pre><code class="hljs cpp" data-trim>
+                </section>
+                <section>
+                    <h3>Statement</h3>
+                </section>
+                <section>
+                    <h4>How would you test a JSON serializer given the following specification?</h4>
+                    <p class="quote">Converts a value to JSON notation representing it.</p>
+                    <p class="vsmallnote">Such specification is the one described by <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify" title="Mozilla Foundation web docs" target="_blank">Mozilla Foundation web docs</a>
+                        for `JSON.stringify` of JavaScript.
+                        The exhaustive specification is available on <a href="http://www.ecma-international.org/ecma-262/5.1/#sec-15.12.3" title="ECMA-262" target="_blank">ECMA-262</a>.
+                    </p>
+                </section>
+                <section>
+                    <pre><code class="hljs cpp" data-trim>
 namespace json {
     
     class JsonObject;
@@ -126,17 +178,13 @@ namespace json {
     std::unique_ptr&lt;JsonObject&gt; parse(std::string const&amp;);
     
 }//json
-                        </code></pre>
+                    </code></pre>
                 </section>
                 <section>
-                    <ul class="left-menu">
-                        <li>Observation</li>
-                        <li>Statement</li>
-                        <li>Easy</li>
-                    </ul>
-                    <div class="content">
-                        <p>Easy, isn't it?</p>
-                        <pre class="fragment"><code class="hljs cpp" data-trim>
+                    <h3>Easy, isn't it?</h3>
+                </section>
+                <section>
+                    <pre><code class="hljs cpp" data-trim>
 TEST(Stringify, ObjectWithTwoAttributesAandB) {
     auto instanceWithAandB = json::JsonDictionary {}
             .with("a", json::JsonInteger {4})
@@ -146,130 +194,80 @@ TEST(Stringify, ObjectWithTwoAttributesAandB) {
         std::string{"{\"a\":4,\"b\":7}"},
         json::stringify(instanceWithAandB));
 }
-                        </code></pre>
+                    </code></pre>
                 </section>
                 <section>
-                    <ul class="left-menu">
-                        <li>Observation</li>
-                        <li>Statement</li>
-                        <li>Easy</li>
-                        <li><ul>Not really
-                            <li>Key ordering</li>
-                        </ul></li>
-                    </ul>
-                    <div class="content">
-                        <pre class="fragment"><code class="hljs" data-trim>{"a":4,"b":7}</code></pre>
-                        <pre class="fragment"><code class="hljs" data-trim>{"b":7,"a":4}</code></pre>
-                        <p class="fragment">Implementation choice:</p>
-                        <ul>
-                            <li class="fragment">way key-value pairs are stored: vector of pairs, map, hashmap...</li>
-                            <li class="fragment">way key-value pairs are iterated</li>
-                        </ul>
+                    <h3>Not really...</h3>
                 </section>
                 <section>
-                    <ul class="left-menu">
-                        <li>Observation</li>
-                        <li>Statement</li>
-                        <li>Easy</li>
-                        <li><ul>Not really
-                            <li>Key ordering</li>
-                            <li>Deterministic</li>
-                        </ul></li>
+                    <h4>Key ordering</h4>
+                    <pre class="fragment"><code class="hljs" data-trim>{"a":4,"b":7}</code></pre>
+                    <pre class="fragment"><code class="hljs" data-trim>{"b":7,"a":4}</code></pre>
+                    <ul>
+                        <li class="fragment">storage: vector of pairs, map, hashmap...</li>
+                        <li class="fragment">iteration</li>
                     </ul>
-                    <div class="content">
-                        <p class="fragment">Implementation choice:</p>
-                        <ul>
-                            <li class="fragment">address based in some way</li>
-                            <li class="fragment">depend on previous calls</li>
-                        </ul>
                 </section>
                 <section>
-                    <ul class="left-menu">
-                        <li>Observation</li>
-                        <li>Statement</li>
-                        <li>Easy</li>
-                        <li><ul>Not really
-                            <li>Key ordering</li>
-                            <li>Deterministic</li>
-                            <li>Ident</li>
-                        </ul></li>
+                    <h4>Deterministic</h4>
+                    <ul>
+                        <li class="fragment">address based in some way</li>
+                        <li class="fragment">depend on previous calls</li>
                     </ul>
-                    <div class="content">
-                        <pre class="fragment"><code class="hljs" data-trim>{"a"  :4   ,  "b"  :7     }</code></pre>
-                        <pre class="fragment"><code class="hljs" data-trim>{"a":4                    ,"b":7                    }</code></pre>
-                        <pre class="fragment"><code class="hljs" data-trim>
+                </section>
+                <section>
+                    <h4>Ident</h4>
+                    <pre class="fragment"><code class="hljs" data-trim>{"a"  :4   ,  "b"  :7     }</code></pre>
+                    <pre class="fragment"><code class="hljs" data-trim>{"a":4                    ,"b":7                    }</code></pre>
+                    <pre class="fragment"><code class="hljs" data-trim>
 {
     "a" : 4,
     "b" : 7
 }
-                        </code></pre>
-                        <p class="fragment">Implementation choice:</p>
-                        <ul>
-                            <li class="fragment">optimizations: several threads or even processes can feed the output string</li>
-                        </ul>
+                    </code></pre>
+                    <ul>
+                        <li class="fragment">optimizations: threads, processes...</li>
+                    </ul>
                 </section>
                 <section>
-                    <ul class="left-menu">
-                        <li>Observation</li>
-                        <li>Statement</li>
-                        <li>Easy</li>
-                        <li><ul>Not really
-                            <li>Key ordering</li>
-                            <li>Deterministic</li>
-                            <li>Ident</li>
-                            <li>Notation</li>
-                        </ul></li>
+                    <h4>Notation</h4>
+                    <pre class="fragment"><code class="hljs" data-trim>{"a":4E0,"b":7E0}</code></pre>
+                    <pre class="fragment"><code class="hljs" data-trim>{"a":40E-1,"b":7E0}</code></pre>
+                    <pre class="fragment"><code class="hljs" data-trim>{"\u0061":4,"b":7}</code></pre>
+                    <ul>
+                        <li class="fragment">compact data</li>
+                        <li class="fragment">unicode characters</li>
                     </ul>
-                    <div class="content">
-                        <pre class="fragment"><code class="hljs" data-trim>{"a":4E0,"b":7E0}</code></pre>
-                        <pre class="fragment"><code class="hljs" data-trim>{"a":40E-1,"b":7E0}</code></pre>
-                        <pre class="fragment"><code class="hljs" data-trim>{"\u0061":4,"b":7}</code></pre>
-                        <p class="fragment">Implementation choice:</p>
-                        <ul>
-                            <li class="fragment">more compact outputs for some values: 3E6 instead of 3000000</li>
-                            <li class="fragment">not area specific characters</li>
-                        </ul>
                 </section>
                 <section>
-                    <ul class="left-menu">
-                        <li>Observation</li>
-                        <li>Statement</li>
-                        <li>Easy</li>
-                        <li>Not really</li>
-                        <li>Property</li>
-                    </ul>
-                    <div class="content">
-                        <p>Any idea?</p>
-                        <pre class="fragment"><code class="hljs cpp" data-trim>
+                    <h3>Property</h3>
+                </section>
+                <section>
+                    <h4>Any idea?</h4>
+                </section>
+                <section>
+                    <pre><code class="hljs cpp" data-trim>
 namespace json {
 
     std::string stringify(JsonObject const&amp;);
     std::unique_ptr&lt;JsonObject&gt; parse(std::string const&amp;);
     
 }//json
-                        </code></pre>
+                    </code></pre>
                 </section>
                 <section>
-                    <ul class="left-menu">
-                        <li>Observation</li>
-                        <li>Statement</li>
-                        <li>Easy</li>
-                        <li>Not really</li>
-                        <li>Property</li>
-                    </ul>
-                    <div class="content">
-                        <p>
-                            Taking the object resulting from the conversion of the JsonObject to a string then back to a JsonObject
-                            should be equivalent to take the original instance itself.
-                        </p>
-                        <pre><code class="hljs cpp" data-trim>
+                    <pre><code class="hljs cpp" data-trim>
 RC_GTEST_PROP(Stringify,
               StringifyThenParseIsIdentity,
               (json::JsonObject const&amp; elt))
 {
     RC_ASSERT(*json::parse(json::stringify(elt)) == elt);
 }
-                        </code></pre>
+                    </code></pre>
+                    <p class="vsmallnote">
+                        Taking the object resulting from the conversion of the JsonObject to a string then back to a JsonObject
+                        should be equivalent to take the original instance itself.
+                    </p>
                 </section>
             </section>
             <section>
@@ -279,7 +277,7 @@ RC_GTEST_PROP(Stringify,
                         <li>Test as debt</li>
                         <li class="active">Limited coverage</li>
                         <li>Property-based testing in action</li>
-                    </ul>
+                    </ol>
                 </section>
             </section>
             <section>
@@ -289,7 +287,7 @@ RC_GTEST_PROP(Stringify,
                         <li>Test as debt</li>
                         <li>Limited coverage</li>
                         <li class="active">Property-based testing in action</li>
-                    </ul>
+                    </ol>
                 </section>
             </section>
         </div>
