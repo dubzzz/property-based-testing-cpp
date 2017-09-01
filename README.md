@@ -10,4 +10,4 @@ It relies on ```GoogleTest``` and ```RapidCheck``` frameworks.
 - https://github.com/emil-e/rapidcheck/blob/master/doc/generators.md
 - https://github.com/emil-e/rapidcheck/blob/master/doc/generators_ref.md
 
-Talk: https://dubzzz.github.io/property-based-testing-cpp/talk/talk.html
+Talk: https://dubzzz.github.io/property-based-testing-cpp/talk/talk.v2.html
