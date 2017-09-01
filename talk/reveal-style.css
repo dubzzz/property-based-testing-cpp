@@ -110,8 +110,8 @@ li.active, .left-menu > li:last-child, .left-menu > li:last-child > ul > li:last
 }
 
 .building .bline .office-no {
-    border: 1px solid #f3f3f3;
-    background-color: #f3f3f3;
+    border: 1px transparent;
+    background-color: none;
 }
 
 .building .bline .tux, .building .bline .bomb, .building .bline .limit {
