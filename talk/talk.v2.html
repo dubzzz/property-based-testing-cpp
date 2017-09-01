@@ -1532,6 +1532,56 @@ RC_GTEST_PROP(LcmGcd, RelationBetweenLcmAndGcd,
                     </code></pre>
                     <p class="vsmallnote">Some properties hold given a combination of multiple functions</p>
                 </section>
+                <section>
+                    <h3>Commands based</h3>
+                </section>
+                <section>
+                    <p>Why  don't we test that the code follow the specifications?</p>
+                </section>
+                <section>
+                    <p>Check pre-conditions before running a command</p>
+                </section>
+                <section>
+                    <p>Check post-conditions after</p>
+                </section>
+                <section>
+                    <pre><code class="hljs cpp" data-trim>
+struct PlayCommand : MusicPlayerCommand
+{
+    void checkPreconditions(MPModel const&amp; /*m*/) const override {}
+    void apply(MPModel&amp; m) const override { m.is_playing = true; }
+    void run(MPModel const&amp; /*m*/, MusicPlayer&amp; p) const override
+    {
+        p.play();
+        RC_ASSERT(p.is_playing());
+    }
+    void show(std::ostream&amp; os) const override { os &lt;&lt; "Play"; }
+};
+                    </code></pre>
+                    <p class="vsmallnote">After running play, player must be in playing mode</p>
+                </section>
+                <section>
+                    <pre><code class="hljs cpp" data-trim>
+
+struct NextCommand : MusicPlayerCommand
+{
+    void checkPreconditions(MPModel const&amp; /*m*/) const override {}
+    void apply(MPModel&amp; m) const override {}
+    void run(MPModel const&amp; m, MusicPlayer&amp; p) const override
+    {
+        auto track_before = p.track_name();
+        p.next();
+        RC_ASSERT(m.is_playing == p.is_playing());
+        if (m.num_tracks == 1)
+            RC_ASSERT(track_before == p.track_name());
+        else
+            RC_ASSERT(track_before != p.track_name());
+    }
+    void show(std::ostream&amp; os) const override { os &lt;&lt; "Next"; }
+};
+                    </code></pre>
+                    <p class="vsmallnote">Next always moves to a different song for multiple tracks playlists</p>
+                </section>
             </section>
             <section>
                 <h2>Questions?</h2>
