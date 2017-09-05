@@ -90,12 +90,8 @@
                 </section>
                 <section>
                     <p>Straight to corner cases</p>
-                </section>
-                <section>
-                    <p>Use the scope of all possible inputs</p>
-                </section>
-                <section>
-                    <p>Shrink the input in case of failure</p>
+                    <p class="fragment">Use the scope of all possible inputs</p>
+                    <p class="fragment">Shrink the input in case of failure</p>
                 </section>
                 <section>
                     <p>Example:</p>
@@ -105,7 +101,7 @@
                     </p>
                 </section>
                 <section>
-                    <p>Lets say that our <em>is_substring</em> fails when the string ends by the pattern</p>
+                    <p>Let's say that our <em>is_substring</em> fails when the string ends by the pattern</p>
                 </section>
                 <section>
                     <p>It might have built:</p>
@@ -150,6 +146,7 @@ is_substring("", "")?              TEST FAILURE
                         <li class="fragment">development logic,</li>
                         <li class="fragment">documentation, ...</li>
                     </ul>
+                    <p class="fragment">An helper not an end in itself</p>
                 </section>
                 <section>
                     <h4>Our faith in tests:</h4>
@@ -158,64 +155,7 @@ is_substring("", "")?              TEST FAILURE
                         <li class="fragment">as simple as possible</li>
                         <li class="fragment">evolve with the code</li>
                         <li class="fragment">wide coverage</li>
-                        <li class="fragment">an helper not an end in itself</li>
                     </ul>
-                </section>
-                <section>
-                    <pre><code class="hljs cpp" data-trim>
-TEST(PrettyWriter, SetIndent) {
-    StringBuffer buffer;
-    PrettyWriter&lt;StringBuffer&gt; writer(buffer);
-    writer.SetIndent('\t', 1);
-    Reader reader;
-    StringStream s(kJson);
-    reader.Parse(s, writer);
-    EXPECT_STREQ(
-        "{\n"
-        "\t\"hello\": \"world\",\n"
-        "\t\"t\": true,\n"
-        "\t\"f\": false,\n"
-        "\t\"n\": null,\n"
-        "\t\"i\": 123,\n"
-        "\t\"pi\": 3.1416,\n"
-        "\t\"a\": [\n"
-        "\t\t1,\n"
-        "\t\t2,\n"
-        "\t\t3,\n"
-        "\t\t-1\n"
-        "\t],\n"
-        "\t\"u64\": 1234567890123456789,\n"
-        "\t\"i64\": -1234567890123456789\n"
-        "}",
-        buffer.GetString());
-}
-                    </code></pre>
-                    <p class="vsmallnote">Example taken from <a href="https://github.com/miloyip/rapidjson/blob/master/test/unittest/prettywritertest.cpp" target="_blank" title="RapidJSON">RapidJSON</a></p>
-                </section>
-                <section>
-                    <pre><code class="hljs" data-trim>
-Title: Add an icon to the Firefox toolbar
-
-Steps:
-
-1. Right click on the toolbar, and select "Customize" from the
-   dropdown menu (or go to main menu->View->Toolbar->Customize...).
-2. A "Customize Toolbar" dialog box containing icons/spaces should
-   be shown.
-3. Select the Print icon using your mouse.
-4. Drag the Print icon to the toolbar and place it to the right of
-   the URL bar (between the end of the URL bar and the beginning of
-   the search box).
-5. Click "Done" to close the Customize Toolbar dialog box.
-6. Click the Print icon you just added.
-
-Expected Results:
-
-1. The Print icon should be added to the toolbar in the place that
-   you specified.
-2. Clicking the Print icon should launch the Print dialog box.
-                    </code></pre>
-                    <p class="vsmallnote">Example taken from <a href="https://developer.mozilla.org/en-US/docs/Mozilla/QA/Test_Case_Writing_Primer" target="_blank" title="Mozilla QA">Mozilla QA</a></p>
                 </section>
                 <section>
                     <p>But what if it was:</p>
@@ -272,17 +212,12 @@ TEST(Stringify, ObjectWithTwoAttributesAandB) {
                     <h4>Key ordering</h4>
                     <pre class="fragment"><code class="hljs" data-trim>{"a":4,"b":7}</code></pre>
                     <pre class="fragment"><code class="hljs" data-trim>{"b":7,"a":4}</code></pre>
-                    <ul>
-                        <li class="fragment">storage: vector of pairs, map, hashmap...</li>
-                        <li class="fragment">iteration</li>
-                    </ul>
+                    <p class="fragment">Change storage strategy?</p>
                 </section>
                 <section>
                     <h4>Deterministic</h4>
-                    <ul>
-                        <li class="fragment">address based in some way</li>
-                        <li class="fragment">depend on previous calls</li>
-                    </ul>
+                    <p class="fragment">Run on other platform?</p>
+                    <p class="fragment">Static data?</p>
                 </section>
                 <section>
                     <h4>Ident</h4>
@@ -294,19 +229,14 @@ TEST(Stringify, ObjectWithTwoAttributesAandB) {
     "b" : 7
 }
                     </code></pre>
-                    <ul>
-                        <li class="fragment">optimizations: threads, processes...</li>
-                    </ul>
+                    <p class="fragment">Divide into multiple threads?</p>
                 </section>
                 <section>
                     <h4>Notation</h4>
                     <pre class="fragment"><code class="hljs" data-trim>{"a":4E0,"b":7E0}</code></pre>
                     <pre class="fragment"><code class="hljs" data-trim>{"a":40E-1,"b":7E0}</code></pre>
                     <pre class="fragment"><code class="hljs" data-trim>{"\u0061":4,"b":7}</code></pre>
-                    <ul>
-                        <li class="fragment">compact data</li>
-                        <li class="fragment">unicode characters</li>
-                    </ul>
+                    <p class="fragment">Full unicode?</p>
                 </section>
                 <section>
                     <h3>Property</h3>
