@@ -35,10 +35,28 @@
                     </ol>
                 </section>
                 <section>
-                    <p>Test properties instead of isolated cases</p>
+                    <h3>Some tests strategies</h3>
                 </section>
                 <section>
-                    <p>Shrink the input in case of failure</p>
+                    <h4>Static code analysis</h4>
+                </section>
+                <section>
+                    <h4>Example based testing</h4>
+                    <p class="quote">Given inputs should produce given results</p>
+                </section>
+                <section>
+                    <h4>Proved code</h4>
+                    <p class="quote">Demonstrate a code by checking that its invariants hold throughout its execution</p>
+                </section>
+                <section>
+                    <h4>Crash under random</h4>
+                    <p class="quote">Monitor a software for exceptions on random inputs - <em>Monkey testing</em> - or random data - <em>Fuzzing</em></p>
+                </section>
+                <section>
+                    <h3>Definition</h3>
+                </section>
+                <section>
+                    <p>Test properties instead of isolated cases</p>
                 </section>
                 <section>
                     <p class="quote">
@@ -48,25 +66,68 @@
                     </p>
                 </section>
                 <section>
-                    <p>Example:</p>
-                    <p class="quote">
-                        for all <em>a and b integers</em>
-                        <br/>such that <em>a &lt;= b</em> holds
-                        <br/><em>a &lt;= mean(a,b) &lt;= b</em> is true
-                    </p>
+                    <h3>How does it work?</h3>
                 </section>
                 <section>
-                    <p>Example:</p>
-                    <p class="quote">
-                        for all <em>array</em>
-                        <br/><span class="fragment">- <em>sorted(array).all(current &lt;= next)</em></span>
-                        <br/><span class="fragment">- <em>sorted(array).length == array.length</em></span>
-                        <br/><span class="fragment">- <em>arity of(value in sorted(array)) == arity of(value in array)</em></span>
-                        <br/><span class="fragment">are true</span>
-                    </p>
+                    <p>Generate random inputs based on specified generators</p>
+                </section>
+                <section>
+                    <p>Check that pre-conditions hold</p>
+                    <p>If they don't: go back to <em>step 1</em></p>
+                </section>
+                <section>
+                    <p>Run the test</p>
+                    <p>Check for failing asserts</p>
+                </section>
+                <section>
+                    <p>Run it <em>100</em> times</p>
+                </section>
+                <section>
+                    <p>In case of failure: <em>reduce the case</em></p>
+                </section>
+                <section>
+                    <h3>Benefits</h3>
+                </section>
+                <section>
+                    <p>Straight to corner cases</p>
                 </section>
                 <section>
                     <p>Use the scope of all possible inputs</p>
+                </section>
+                <section>
+                    <p>Shrink the input in case of failure</p>
+                </section>
+                <section>
+                    <p>Example:</p>
+                    <p class="quote">
+                        for all <em>a</em>, <em>b</em>, <em>c</em> strings
+                        <br/><em>b</em> is a substring of <em>a + b + c</em>
+                    </p>
+                </section>
+                <section>
+                    <p>Lets say that our <em>is_substring</em> fails when the string ends by the pattern</p>
+                </section>
+                <section>
+                    <p>It might have built:</p>
+                    <pre class="fragment"><code class="hljs" data-trim>
+(a, b, c) = ("aaa", "bbb", "ccc")
+is_substring("bbb", "aaabbbccc")?  TEST OK
+                    </code></pre>
+                    <pre class="fragment"><code class="hljs" data-trim>
+(a, b, c) = (   "",  "dd",   "e")
+is_substring("dd", "dde")?         TEST OK
+                    </code></pre>
+                    <pre class="fragment"><code class="hljs" data-trim>
+(a, b, c) = ( "yy",   "w",   "")
+is_substring("w", "yyw")?          TEST FAILURE
+                    </code></pre>
+                    <pre class="fragment"><code class="hljs" data-trim>
+-- SHRINK INPUT --
+                    </code></pre>
+                    <pre class="fragment"><code class="hljs" data-trim>
+(a, b, c) = (   "",    "",   "")
+is_substring("", "")?              TEST FAILURE
+                    </code></pre>
                 </section>
             </section>
             <section>
