@@ -20,8 +20,8 @@
                     <h2>Agenda</h2>
                     <ol class="agenda">
                         <li>Another test philosophy</li>
-                        <li>Test as debt</li>
-                        <li>Limited coverage</li>
+                        <li>Assumptions when testing</li>
+                        <li>Properties for real life</li>
                     </ol>
                 </section>
             </section>
@@ -30,27 +30,35 @@
                     <h2>Agenda</h2>
                     <ol class="agenda">
                         <li class="active">Another test philosophy</li>
-                        <li>Test as debt</li>
-                        <li>Limited coverage</li>
+                        <li>Assumptions when testing</li>
+                        <li>Properties for real life</li>
                     </ol>
                 </section>
                 <section>
                     <h3>Some tests strategies</h3>
                 </section>
                 <section>
-                    <h4>Static code analysis</h4>
-                </section>
-                <section>
-                    <h4>Example based testing</h4>
-                    <p class="quote">Given inputs should produce given results</p>
-                </section>
-                <section>
-                    <h4>Proved code</h4>
-                    <p class="quote">Demonstrate a code by checking that its invariants hold throughout its execution</p>
-                </section>
-                <section>
-                    <h4>Crash under random</h4>
-                    <p class="quote">Monitor a software for exceptions on random inputs - <em>Monkey testing</em> - or random data - <em>Fuzzing</em></p>
+                    <table>
+                        <tr>
+                            <td>
+                                <p>Static code analysis</p>
+                            </td>
+                            <td>
+                                <p>Example based testing</p>
+                                <p class="vsmallnote">Given inputs should produce given results</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Proved code</p>
+                                <p class="vsmallnote">Demonstrate a code by checking that its invariants hold throughout its execution</p>
+                            </td>
+                            <td>
+                                <p>Crash under random</p>
+                                <p class="vsmallnote">Monitor a software for exceptions on random inputs - <em>Monkey testing</em> - or random data - <em>Fuzzing</em></p>
+                            </td>
+                        </tr>
+                    </table>
                 </section>
                 <section>
                     <h3>Definition</h3>
@@ -69,21 +77,31 @@
                     <h3>How does it work?</h3>
                 </section>
                 <section>
-                    <p>Generate random inputs based on specified generators</p>
-                </section>
-                <section>
-                    <p>Check that pre-conditions hold</p>
-                    <p>If they don't: go back to <em>step 1</em></p>
-                </section>
-                <section>
-                    <p>Run the test</p>
-                    <p>Check for failing asserts</p>
-                </section>
-                <section>
-                    <p>Run it <em>100</em> times</p>
-                </section>
-                <section>
-                    <p>In case of failure: <em>reduce the case</em></p>
+                    <p class="flex no-margin" style="border-bottom: dotted 1px white">
+                        <span class="left-column">for all</span>
+                        <span class="right-column fragment" data-fragment-index="6">run it <em>100</em> times</span>
+                    </p>
+                    <p class="flex no-margin" style="border-bottom: dotted 1px white">
+                        <span class="left-column left-padded"><em>(x, y, ...)</em></span>
+                        <span class="right-column left-padded fragment" data-fragment-index="1">generate random inputs based on specified generators</span>
+                    </p>
+                    <p class="flex no-margin" style="border-bottom: dotted 1px white">
+                        <span class="left-column left-padded">
+                            such that
+                            <br/><em>pre-condition(x, y, ...)</em> holds
+                        </span>
+                        <span class="right-column left-padded fragment" data-fragment-index="2">
+                            check pre-conditions
+                            <br/><span class="fragment" data-fragment-index="3"><em>fails?</em>: go back to previous</span>
+                        </span>
+                    </p>
+                    <p class="flex no-margin">
+                        <span class="left-column left-padded"><em>property(x, y, ...)</em> is true</span>
+                        <span class="right-column left-padded fragment" data-fragment-index="4">
+                            run the test
+                            <br/><span class="fragment" data-fragment-index="5"><em>fails?</em>: try shrinking</span>
+                        </span>
+                    </p>
                 </section>
                 <section>
                     <h3>Benefits</h3>
@@ -131,8 +149,8 @@ is_substring("", "")?              TEST FAILURE
                     <h2>Agenda</h2>
                     <ol class="agenda">
                         <li>Another test philosophy</li>
-                        <li class="active">Test as debt</li>
-                        <li>Limited coverage</li>
+                        <li class="active">Assumptions when testing</li>
+                        <li>Properties for real life</li>
                     </ol>
                 </section>
                 <section>
@@ -274,8 +292,8 @@ RC_GTEST_PROP(Stringify,
                     <h2>Agenda</h2>
                     <ol class="agenda">
                         <li>Another test philosophy</li>
-                        <li>Test as debt</li>
-                        <li class="active">Limited coverage</li>
+                        <li>Assumptions when testing</li>
+                        <li class="active">Properties for real life</li>
                     </ol>
                 </section>
                 <section>

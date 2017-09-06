@@ -134,3 +134,21 @@ li.active, .left-menu > li:last-child, .left-menu > li:last-child > ul > li:last
 .building .bline .limit {
     background-image: url(limit-32.png);
 }
+
+.flex {
+    display: flex;
+    flex-flow: row;
+}
+
+.no-margin {
+    margin: none !important;
+}
+
+.left-column, .right-column {
+    flex: 50%;
+    text-align: left;
+}
+
+.left-padded {
+    padding-left: 1em !important;
+}
