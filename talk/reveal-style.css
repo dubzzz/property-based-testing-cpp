@@ -101,7 +101,7 @@ li.active, .left-menu > li:last-child, .left-menu > li:last-child > ul > li:last
 
 .building .bline .office-on2 {
     border: 1px solid rgb(255, 201, 14);
-    background-color: rgb(163, 73, 164);
+    background-color: rgb(255, 201, 14);
 }
 
 .building .bline .office-off {
@@ -133,6 +133,8 @@ li.active, .left-menu > li:last-child, .left-menu > li:last-child > ul > li:last
 
 .building .bline .limit {
     background-image: url(limit-32.png);
+    background-size: 32px 32px;
+    background-repeat: no-repeat;
 }
 
 .flex {
