@@ -108,11 +108,11 @@ Reveal.initialize({
 
     // Optional modules
     dependencies: [
-        { src: 'https://cdn.jsdelivr.net/reveal.js/3.0.0/lib/js/classList.js', condition: function() { return !document.body.classList; } },
-        { src: 'https://cdn.jsdelivr.net/reveal.js/3.0.0/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
-        { src: 'https://cdn.jsdelivr.net/reveal.js/3.0.0/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
-        { src: 'https://cdn.jsdelivr.net/reveal.js/3.0.0/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
-        { src: 'https://cdn.jsdelivr.net/reveal.js/3.0.0/plugin/zoom-js/zoom.js', async: true },
+        { src: 'reveal/classList.js' /*'https://cdn.jsdelivr.net/reveal.js/3.0.0/lib/js/classList.js'*/, condition: function() { return !document.body.classList; } },
+        { src: 'reveal/marked.js' /*'https://cdn.jsdelivr.net/reveal.js/3.0.0/plugin/markdown/marked.js'*/, condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+        { src: 'reveal/markdown.js' /*'https://cdn.jsdelivr.net/reveal.js/3.0.0/plugin/markdown/markdown.js'*/, condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+        { src: 'reveal/highlight.js' /*'https://cdn.jsdelivr.net/reveal.js/3.0.0/plugin/highlight/highlight.js'*/, async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+        { src: 'reveal/zoom.js' /*'https://cdn.jsdelivr.net/reveal.js/3.0.0/plugin/zoom-js/zoom.js'*/, async: true },
         { src: 'elapsed-time-bar.js' },
     ]
 });
