@@ -35,11 +35,6 @@ public:
         std::next(_tracks.begin(), position)
         , std::next(_tracks.begin(), _tracks.size() -1)
         , _tracks.end());
-
-	if (_playing >= position)
-	{
-		++_playing;
-	}
   }
 
   void next()

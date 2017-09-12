@@ -14,3 +14,30 @@ Lets assume we are building a music player having the following characteristics:
 For the sake of this example, we will simplify the notion of track and position in the track:
 - track will be considered as a simple label
 - position in the track will not be taken into account (as a consequence moving to next track results in a call to Next)
+
+## Property based status
+
+### With [```implem.1.inl.hpp```](https://github.com/dubzzz/property-based-testing-cpp/blob/master/musicplayer/implem.1.inl.hpp)
+
+```
+[ RUN      ] MusicPlayer.CheckProperties
+Using configuration: seed=7715581590959629166
+/property-based-testing-cpp/rapidcheck/extras/gtest/include/rapidcheck/gte
+st.h(29): error: Failed
+Falsifiable after 8 tests and 7 shrinks
+
+std::tuple<std::set<std::string>>:
+({"", "a"})
+
+std::vector<std::shared_ptr<const Command<MusicPlayerModel, MusicPlayer>>>:
+AddTrack(b, 0)
+
+
+C:\src\property-based-testing-cpp\musicplayer\main.cpp:173:
+RC_ASSERT(track_before == p.track_name())
+
+Expands to:
+"" == "b"
+
+[  FAILED  ] MusicPlayer.CheckProperties (84 ms)
+```
