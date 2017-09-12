@@ -13,6 +13,7 @@ install:
 - cd ..
 - git clone https://github.com/google/googletest.git
 - cd googletest
+- git checkout ecd530865cefdfa7dea58e84f6aa1b548950363d
 - cmake -G "Visual Studio 14 2015" .
 - devenv.exe googletest\msvc\gtest-md.sln /Upgrade
 - devenv.exe googletest\msvc\gtest-md.sln /Build
