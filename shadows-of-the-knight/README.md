@@ -62,3 +62,8 @@ false
 
 [  FAILED  ] ShadowsOfTheKnight.ShouldAlwaysReachTheTarget (15 ms)
 ```
+
+## Other languages
+
+JavaScript: https://runkit.com/dubzzz/property-based-testing-example-shadows-of-the-knight
+
