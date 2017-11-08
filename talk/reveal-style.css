@@ -1,3 +1,7 @@
+/*.reveal .section-title {
+    transform: rotate(-90deg);
+}*/
+
 .reveal h1, .reveal h2, .reveal h3, .reveal h4, .reveal h5, .reveal h6 {
     font-weight: normal;
     text-transform: none; 
@@ -5,6 +9,19 @@
 
 .reveal h1 + .more, .reveal h2 + .more, .reveal h3 + .more, .reveal h4 + .more, .reveal h5 + .more, .reveal h6 + .more {
     margin-top: -20px;
+}
+
+.reveal h3::after {
+    content: '';
+    display: block;
+    margin-left: 25%;
+    width: 50%;
+    border-bottom: solid 1px rgb(255, 201, 14);
+}
+
+.reveal h2 + h3::after {
+    content: '';
+    display: none;
 }
 
 .reveal .more {
@@ -78,6 +95,10 @@ li.active, .left-menu > li:last-child, .left-menu > li:last-child > ul > li:last
     font-style: italic;
     font-size: 0.5em;
     color: #777872;
+}
+
+.reveal li::first-letter {
+    text-transform: uppercase;
 }
 
 .building {

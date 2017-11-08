@@ -1,0 +1,1952 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Property-based testing -- by Nicolas DUBIEN</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="reveal/reveal.min.css"><!-- https://cdn.jsdelivr.net/reveal.js/3.0.0/css/reveal.min.css -->
+    <link rel="stylesheet" href="reveal/black-patched.css"><!-- https://cdn.jsdelivr.net/reveal.js/3.0.0/css/theme/black.css -->
+    <link rel="stylesheet" href="highlight/atom-one-dark.min.css" id="highlight-css"><!-- https://cdn.jsdelivr.net/reveal.js/3.0.0/lib/css/zenburn.css -->
+    <link rel="stylesheet" href="reveal-style.css">
+  </head>
+  <body>
+    <div class="reveal">
+        <div class="slides">
+            <section>
+                <section>
+                    <h1>Property-based testing</h1>
+                    <h2 class="more">Using <a href="https://github.com/emil-e/rapidcheck/" target="_blank">RapidCheck</a></h2>
+                </section>
+                <section>
+                    <h2>Agenda</h2>
+                    <ol class="agenda">
+                        <li>Introduction</li>
+                        <li>Applications of property-based testing</li>
+                    </ol>
+                </section>
+            </section>
+            <section>
+                <section>
+                    <h2>Introduction</h2>
+                    <h3>Another test philosophy</h3>
+                </section>
+                <section>
+                    <h3>Some test strategies</h3>
+                    <table class="fragment">
+                        <tr>
+                            <td>
+                                <p>Static code analysis</p>
+                            </td>
+                            <td>
+                                <p>Example-based testing</p>
+                                <p class="vsmallnote">Given inputs should produce given results</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Proved code</p>
+                                <p class="vsmallnote">Demonstrate a code by checking that its invariants hold throughout its execution</p>
+                            </td>
+                            <td>
+                                <p>Crash under random</p>
+                                <p class="vsmallnote">Monitor a software for exceptions on random inputs - <em>Monkey testing</em> - or random data - <em>Fuzzing</em></p>
+                            </td>
+                        </tr>
+                    </table>
+                </section>
+                <section>
+                    <h3>Definition</h3>
+                    <p class="fragment">Test properties instead of isolated cases</p>
+                    <p class="quote fragment">
+                        for all <em>(x, y, ...)</em>
+                        <br/>such that <em>precondition(x, y, ...)</em> holds
+                        <br/><em>property(x, y, ...)</em> is true
+                    </p>
+                </section>
+                <section>
+                    <h3>How does it work?</h3>
+                    <p class="flex no-margin" style="border-bottom: dotted 1px white">
+                        <span class="left-column">for all</span>
+                        <span class="right-column fragment" data-fragment-index="6">run it <em>100</em> times</span>
+                    </p>
+                    <p class="flex no-margin" style="border-bottom: dotted 1px white">
+                        <span class="left-column left-padded"><em>(x, y, ...)</em></span>
+                        <span class="right-column left-padded fragment" data-fragment-index="1">generate random inputs based on specified generators</span>
+                    </p>
+                    <p class="flex no-margin" style="border-bottom: dotted 1px white">
+                        <span class="left-column left-padded">
+                            such that
+                            <br/><em>precondition(x, y, ...)</em> holds
+                        </span>
+                        <span class="right-column left-padded fragment" data-fragment-index="2">
+                            check pre-conditions
+                            <br/><span class="fragment" data-fragment-index="3"><em>fails?</em>: go back to previous</span>
+                        </span>
+                    </p>
+                    <p class="flex no-margin">
+                        <span class="left-column left-padded"><em>property(x, y, ...)</em> is true</span>
+                        <span class="right-column left-padded fragment" data-fragment-index="4">
+                            run the test
+                            <br/><span class="fragment" data-fragment-index="5"><em>fails?</em>: try shrinking</span>
+                        </span>
+                    </p>
+                </section>
+                <section>
+                    <h3>Benefits</h3>
+                    <ul>
+                        <li class="fragment">Reproducible</li>
+                        <li class="fragment">Straight to corner cases</li>
+                        <li class="fragment">Use the scope of all possible inputs</li>
+                        <li class="fragment">Shrink the input in case of failure</li>
+                    </ul>
+                </section>
+                <section>
+                    <h3>Basic example</h3>
+                    <p class="fragment">Let's suppose that we want to test is_substring</p>
+                    <p class="fragment quote">
+                        for all <em>a</em>, <em>b</em>, <em>c</em> strings
+                        <br/><em>b</em> is a substring of <em>a + b + c</em>
+                    </p>
+                </section>
+                <section>
+                    <h3>Basic example</h3>
+                    <p>Let's suppose that our implementation <u>fails when the string ends by the pattern</u> (arbitrary choice)</p>
+                    <p class="fragment">Framework might have built:</p>
+                    <pre class="fragment"><code class="hljs" data-trim>
+(a, b, c) = ("aaa", "bbb", "ccc")
+is_substring("bbb", "aaabbbccc")?  TEST OK
+                    </code></pre>
+                    <pre class="fragment"><code class="hljs" data-trim>
+(a, b, c) = (   "",  "dd",   "e")
+is_substring("dd", "dde")?         TEST OK
+                    </code></pre>
+                    <pre class="fragment"><code class="hljs" data-trim>
+(a, b, c) = ( "yy",   "w",   "")
+is_substring("w", "yyw")?          TEST FAILURE
+                    </code></pre>
+                    <pre class="fragment"><code class="hljs" data-trim>
+-- SHRINK INPUT --
+                    </code></pre>
+                    <pre class="fragment"><code class="hljs" data-trim>
+(a, b, c) = (   "",    "",   "")
+is_substring("", "")?              TEST FAILURE
+                    </code></pre>
+                </section>
+            </section>
+            <section>
+                <section>
+                    <h2>Applications of property-based testing</h2>
+                    <ol class="agenda">
+                        <li class="active">Case #1: pure algorithm</li>
+                        <li>Case #2: game</li>
+                        <li>Case #3: user interface</li>
+                    </ol>
+                </section>
+                <section>
+                    <h3>Observation</h3>
+                    <h4 class="fragment">Why do we test?</h4>
+                    <ul>
+                        <li class="fragment">check for possible regressions</li>
+                        <li class="fragment">early bug detection</li>
+                        <li class="fragment">development logic</li>
+                        <li class="fragment">documentation...</li>
+                    </ul>
+                    <p class="fragment">A helper not an end in itself</p>
+                </section>
+                <section>
+                    <h3>Observation</h3>
+                    <h4>Our faith in tests:</h4>
+                    <ul>
+                        <li class="fragment">up-to-date</li>
+                        <li class="fragment">as simple as possible</li>
+                        <li class="fragment">evolve with the code</li>
+                        <li class="fragment">wide coverage</li>
+                    </ul>
+                </section>
+                <section>
+                    <h3>Observation</h3>
+                    <p>But what if it was:</p>
+                    <ul>
+                        <li class="fragment">costly to maintain</li>
+                        <li class="fragment">limiting possible improvements</li>
+                    </ul>
+                </section>
+                <section>
+                    <h3>How would you test...?</h3>
+                    <div class="fragment">
+                        <h4>How would you test a JSON serializer given the following specification?</h4>
+                        <p class="quote">Converts a value to JSON notation representing it.</p>
+                        <p class="vsmallnote">Such specification is the one described by <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify" title="Mozilla Foundation web docs" target="_blank">Mozilla Foundation web docs</a>
+                            for `JSON.stringify` of JavaScript.
+                            The exhaustive specification is available on <a href="http://www.ecma-international.org/ecma-262/5.1/#sec-15.12.3" title="ECMA-262" target="_blank">ECMA-262</a>.
+                        </p>
+                    </div>
+                </section>
+                <section>
+                    <h3>How would you test a JSON serializer?</h3>
+                    <pre><code class="hljs cpp" data-trim>
+namespace json {
+    
+    class JsonObject;
+    class JsonArray : public JsonObject;
+    class JsonDictionary : public JsonObject;
+    
+    std::string stringify(JsonObject const&amp;);
+    std::unique_ptr&lt;JsonObject&gt; parse(std::string const&amp;);
+    
+}//json
+                    </code></pre>
+                </section>
+                <section>
+                    <h3>How would you test a JSON serializer?</h3>
+                    <pre><code class="hljs cpp" data-trim>
+TEST(Stringify, ObjectWithTwoAttributesAandB) {
+    auto instanceWithAandB = json::JsonDictionary {}
+            .with("a", json::JsonInteger {4})
+            .with("b", json::JsonInteger {7});
+    
+    ASSERT_EQ(
+        std::string{"{\"a\":4,\"b\":7}"},
+        json::stringify(instanceWithAandB));
+}
+                    </code></pre>
+                </section>
+                <section>
+                    <h3>Not really...</h3>
+                    <table style="width:100%;">
+                        <tr>
+                            <td>
+                                <h4 class="fragment">Key ordering</h4>
+                                <pre class="fragment"><code class="hljs" data-trim>{"a":4,"b":7}</code></pre>
+                                <pre class="fragment"><code class="hljs" data-trim>{"b":7,"a":4}</code></pre>
+                                <p class="fragment vsmallnote">Change storage strategy?</p>
+                            </td>
+                            <td>
+                                <h4 class="fragment">Deterministic</h4>
+                                <p class="fragment vsmallnote">Run on other platform?</p>
+                                <p class="fragment vsmallnote">Static data?</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <h4 class="fragment">Indent</h4>
+                                <pre class="fragment"><code class="hljs" data-trim>{"a"  :4   ,  "b":7}</code></pre>
+                                <pre class="fragment"><code class="hljs" data-trim>{"a":4    ,"b":7    }</code></pre>
+                                <pre class="fragment"><code class="hljs" data-trim>
+{"a" : 4
+,"b" : 7}
+                                </code></pre>
+                                <p class="fragment vsmallnote">Divide into multiple threads?</p>
+                            </td>
+                            <td>                               
+                                <h4 class="fragment">Notation</h4>
+                                <pre class="fragment"><code class="hljs" data-trim>{"a":4E0,"b":7E0}</code></pre>
+                                <pre class="fragment"><code class="hljs" data-trim>{"a":40E-1,"b":7E0}</code></pre>
+                                <pre class="fragment"><code class="hljs" data-trim>{"\u0061":4,"b":7}</code></pre>
+                                <p class="fragment vsmallnote">Full unicode?</p>
+                            </td>
+                        </tr>
+                    </table>
+                </section>
+                <section>
+                    <h3>Property for JSON.stringify</h3>
+                    <pre class="fragment"><code class="hljs cpp" data-trim>
+namespace json {
+
+    std::string stringify(JsonObject const&amp;);
+    std::unique_ptr&lt;JsonObject&gt; parse(std::string const&amp;);
+    
+}//json
+                    </code></pre>
+                </section>
+                <section>
+                    <h3>Property for JSON.stringify</h3>
+                    <pre><code class="hljs cpp" data-trim>
+RC_GTEST_PROP(Stringify,
+              StringifyThenParseIsIdentity,
+              (json::JsonObject const&amp; elt))
+{
+    RC_ASSERT(*json::parse(json::stringify(elt)) == elt);
+}
+                    </code></pre>
+                    <p class="vsmallnote">
+                        Taking the object resulting from the conversion of the JsonObject to a string then back to a JsonObject
+                        should be equivalent to take the original instance itself.
+                    </p>
+                </section>
+                <section>
+                    <h3>We've seen:</h3>
+                    <ul>
+                        <li class="fragment">tests can rely on too many assumptions</li>
+                        <li class="fragment">application of property based testing</li>
+                        <li class="fragment">testing without too much hypothesis</li>
+                        <li class="fragment">complementary to unit tests</li>
+                    </ul>
+                </section>
+            </section>
+            <section>
+                <section>
+                    <h2>Applications of property-based testing</h2>
+                    <ol class="agenda">
+                        <li>Case #1: pure algorithm</li>
+                        <li class="active">Case #2: game</li>
+                        <li>Case #3: user interface</li>
+                    </ol>
+                </section>
+                <section>
+                    <h3>Context</h3>
+                    <p class="fragment"><a href="https://www.codingame.com/" target="_blank" title="CodinGame">CodinGame</a></p>
+                    <div class="fragment">
+                        <p>Two sets of tests:</p>
+                        <ul>
+                            <li>public set: available for development</li>
+                            <li>private set: unknown tests</li>
+                        </ul>
+                    </div>
+                </section>
+                <section data-transition="fade-out">
+                    <h3>Game statement</h3>
+                    <p class="building">
+                        <span class="bline">
+                            <span class="office-on"><span style="font-size:0.35em;position:absolute;left:0;top:0">(0,0)</span></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                        <span class="bline">
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"><span class="tux"></span></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"><span class="bomb"></span></span>
+                            <span class="office-on"></span>
+                        </span>
+                    </p>
+                    <pre><code class="hljs" data-trim>
+Hint:
+$: dimensions = (8, 8)
+$: position   = (4, 4)
+$: hint       = "DR"
+                    </code></pre>
+                </section>
+                <section data-transition="fade-out">
+                    <h3>Game statement</h3>
+                    <p class="building">
+                        <span class="bline">
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                        <span class="bline">
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"><span class="tux"></span></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on2"></span>
+                            <span class="office-on2"></span>
+                            <span class="office-on2"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on2"></span>
+                            <span class="office-on2"></span>
+                            <span class="office-on2"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on2"></span>
+                            <span class="office-on2"><span class="bomb"></span></span>
+                            <span class="office-on2"></span>
+                        </span>
+                    </p>
+                    <pre><code class="hljs" data-trim>
+Hint:
+$: dimensions = (8, 8)
+$: position   = (4, 4)
+$: hint       = "DR"
+                    </code></pre>
+                </section>
+                <section data-transition="fade-out">
+                    <h3>Game statement</h3>
+                    <p class="building">
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"><span class="tux"></span></span>
+                            <span class="office-on"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"><span class="bomb"></span></span>
+                            <span class="office-on"></span>
+                        </span>
+                    </p>
+                    <pre><code class="hljs" data-trim>
+Hint:
+$: dimensions = (8, 8)
+$: position   = (6, 6)
+$: hint       = "D"
+                    </code></pre>
+                </section>
+                <section data-transition="fade-out">
+                    <h3>Game statement</h3>
+                    <p class="building">
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"><span class="tux"></span></span>
+                            <span class="office-on"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on2"><span class="bomb"></span></span>
+                            <span class="office-on"></span>
+                        </span>
+                    </p>
+                    <pre><code class="hljs" data-trim>
+Hint:
+$: dimensions = (8, 8)
+$: position   = (6, 6)
+$: hint       = "D"
+                    </code></pre>
+                </section>
+                <section data-transition="fade-out">
+                    <h3>Game statement</h3>
+                    <p class="building">
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-on"><span class="bomb"></span><span class="tux"></span></span>
+                            <span class="office-off"></span>
+                        </span>
+                    </p>
+                    <pre><code class="hljs" data-trim>
+Hint:
+$: dimensions = (8, 8)
+$: position   = (6, 7)
+$: hint       = ""
+                    </code></pre>
+                </section>
+                <section>
+                    <h3>Prototypes</h3>
+                    <div class="fragment">
+                        <h4>Expected implementation</h4>
+                        <pre><code class="hljs cpp" data-trim>void find_bomb(Game&amp; game);</code></pre>
+                    </div>
+                </section>
+                <section>
+                    <h3>Prototypes</h3>
+                    <h4>Helper to read from CodinGame</h4>
+                    <pre><code class="hljs cpp" data-trim>
+class Game
+{
+public:
+    // dimensions of the grid
+    std::size_t dimension_x() const;
+    std::size_t dimension_y() const;
+    // last known location
+    std::size_t previous_x() const;
+    std::size_t previous_y() const;
+    // direction to the target (U / D, L / R)
+    std::string const&amp; hint() const;
+    // is it the position of the target?
+    bool solved() const;
+    // update position
+    void move(std::size_t x, std::size_t y);
+};
+                    </code></pre>
+                </section>
+                <section data-transition="fade-out">
+                    <h3>Implementation</h3>
+                    <p class="building">
+                        <span class="bline">
+                            <span class="office-on"><span class="tux"></span></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                        <span class="bline">
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                        </span>
+                    </p>
+                    <p>Hint: DR</p>
+                </section>
+                <section data-transition="fade-out">
+                    <h3>Implementation</h3>
+                    <p class="building">
+                        <span class="bline">
+                            <span class="office-on"><span class="tux"></span></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                        <span class="bline">
+                            <span class="office-on"></span>
+                            <span class="office-on2"></span>
+                            <span class="office-on2"></span>
+                            <span class="office-on2"></span>
+                            <span class="office-on2"></span>
+                            <span class="office-on2"></span>
+                            <span class="office-on2"></span>
+                            <span class="office-on2"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-on"></span>
+                            <span class="office-on2"></span>
+                            <span class="office-on2"></span>
+                            <span class="office-on2"></span>
+                            <span class="office-on2"></span>
+                            <span class="office-on2"></span>
+                            <span class="office-on2"></span>
+                            <span class="office-on2"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-on"></span>
+                            <span class="office-on2"></span>
+                            <span class="office-on2"></span>
+                            <span class="office-on2"></span>
+                            <span class="office-on2"></span>
+                            <span class="office-on2"></span>
+                            <span class="office-on2"></span>
+                            <span class="office-on2"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-on"></span>
+                            <span class="office-on2"></span>
+                            <span class="office-on2"></span>
+                            <span class="office-on2"></span>
+                            <span class="office-on2"></span>
+                            <span class="office-on2"></span>
+                            <span class="office-on2"></span>
+                            <span class="office-on2"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-on"></span>
+                            <span class="office-on2"></span>
+                            <span class="office-on2"></span>
+                            <span class="office-on2"></span>
+                            <span class="office-on2"></span>
+                            <span class="office-on2"></span>
+                            <span class="office-on2"></span>
+                            <span class="office-on2"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-on"></span>
+                            <span class="office-on2"></span>
+                            <span class="office-on2"></span>
+                            <span class="office-on2"></span>
+                            <span class="office-on2"></span>
+                            <span class="office-on2"></span>
+                            <span class="office-on2"></span>
+                            <span class="office-on2"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-on"></span>
+                            <span class="office-on2"></span>
+                            <span class="office-on2"></span>
+                            <span class="office-on2"></span>
+                            <span class="office-on2"></span>
+                            <span class="office-on2"></span>
+                            <span class="office-on2"></span>
+                            <span class="office-on2"></span>
+                        </span>
+                    </p>
+                    <p>Hint: DR</p>
+                </section>
+                <section data-transition="fade-out">
+                    <h3>Implementation</h3>
+                    <p class="building">
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"><span class="tux"></span></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                        </span>
+                    </p>
+                    <p>Hint: U</p>
+                </section>
+                <section data-transition="fade-out">
+                    <h3>Implementation</h3>
+                    <p class="building">
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on2"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on2"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on2"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"><span class="tux"></span></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                        </span>
+                    </p>
+                    <p>Hint: U</p>
+                </section>
+                <section>
+                    <p>...</p>
+                </section>
+                <section>
+                    <h3>Implementation</h3>
+                    <pre><code class="hljs cpp" data-trim>
+void find_bomb(Game&amp; game)
+{
+    std::size_t x_min = 0;
+    std::size_t x_max = game.dimension_x();
+    std::size_t y_min = 0;
+    std::size_t y_max = game.dimension_y();
+    while (x_min &lt; x_max &amp;&amp; y_min &lt; y_max)
+    {
+        // content on next slide
+    }
+}
+                    </code></pre>
+                </section>
+                <section>
+                    <h3>Implementation</h3>
+                    <pre><code class="hljs cpp" data-trim>
+std::size_t x0 = game.previous_x();
+auto const&amp; hint = game.hint();
+if (hint.back() == 'L')
+{
+    x_max = x0 -1;
+    x0 = (x_max + x_min) /2;
+}
+else if (hint.back() == 'R')
+{
+    x_min = x0 +1;
+    x0 = (x_max + x_min) /2;
+}
+// same for y...
+game.move(x0, y0);
+                    </code></pre>
+                </section>
+                <section>
+                    <h3>Results</h3>
+                    <div class="fragment">
+                        <h4>User tests</h4>
+                        <img src="codingame-user-tests.png" alt="User tests results" />
+                    </div>
+                </section>
+                <section>
+                    <h3>Results</h3>
+                    <h4>Evaluation tests</h4>
+                    <img src="codingame-eval-tests.png" alt="Evaluation tests results" />
+                </section>
+                <section>
+                    <h3>Property</h3>
+                    <h4 class="fragment">What?</h4>
+                    <p class="fragment">Solve the game in a limited amount of guesses</p>
+                    <p class="quote fragment">
+                        At first, we can assume that we will be able to solve it in a maximum of <em>width</em> x <em>height</em>
+                    </p>
+                    <p class="quote fragment">
+                        We can solve it in max(<em>width</em>, <em>height</em>) without too many complexity
+                    </p>
+                    <p class="quote fragment">
+                        We can solve it in ceil(log2(max(<em>width</em>, <em>height</em>)))
+                    </p>
+                </section>
+                <section>
+                    <h3>Property</h3>
+                    <h4>Inputs</h4>
+                    <p class="fragment">(<em>width</em>, <em>height</em>): integers between 1 and 10 000*</p>
+                    <p class="fragment">(<em>start_x</em>, <em>target_x</em>): integers between 0 and <em>width</em>*</p>
+                    <p class="fragment">(<em>start_y</em>, <em>target_y</em>): integers between 0 and <em>height</em>*</p>
+                    <p class="fragment">(<em>num_rounds</em>): max(<em>width</em>, <em>height</em>)</p>
+                    <p class="vsmallnote">*not included</p>
+                </section>
+                <section>
+                    <h3>Property</h3>
+                    <h4>Success</h4>
+                    <p class="fragment">Reach the target with a maximum of <em>num_rounds</em> rounds</p>
+                </section>
+                <section>
+                    <h3>Property</h3>
+                    <h4>RapidCheck implementation</h4>
+                    <pre><code class="hljs cpp" data-trim>
+RC_GTEST_PROP(ShadowsOfTheKnight, SAlwaysReachTarget, ())
+{
+    auto w = *inRange(1, 10000).as("grid width");
+    auto h = *inRange(1, 10000).as("grid height");
+    auto inRangeGen = apply(
+        [](auto x, auto y) { return std::make_pair(x, y); }
+        , inRange(0, w), inRange(0, h));
+    auto current  = *inRangeGen.as("start position");
+    auto solution = *inRangeGen.as("target position");
+    TestGame game = TestGameBuilder{}
+        .withDimension(w, h)
+        .withSolution(solution.first, solution.second)
+        .withCurrent(current.first, current.second).build();
+    find_bomb(game);
+    RC_ASSERT(game.solved());
+}
+                    </code></pre>
+                </section>
+                <section>
+                    <h3>Run tests</h3>
+                    <div class="fragment">
+                        <h4>Failed with output:</h4>
+                        <pre><code class="hljs" data-trim>
+Falsifiable after 9 tests and 5 shrinks
+
+grid width:
+8
+
+grid height:
+8
+
+start position:
+(0, 1)
+
+target position:
+(1, 0)
+                        </code></pre>
+                    </div>
+                </section>
+                <section data-transition="fade-out">
+                    <h3>Failure analysis</h3>
+                    <p class="building">
+                        <span class="bline">
+                            <span class="office-on"><span class="limit"></span></span>
+                            <span class="office-on"><span class="bomb"></span></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-no"></span>
+                        <span class="bline">
+                            <span class="office-on"><span class="tux"></span></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-no"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-no"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-no"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-no"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-no"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-no"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-no"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-no"></span>
+                            <span class="office-no"></span>
+                            <span class="office-no"></span>
+                            <span class="office-no"></span>
+                            <span class="office-no"></span>
+                            <span class="office-no"></span>
+                            <span class="office-no"></span>
+                            <span class="office-no"></span>
+                            <span class="office-no"><span class="limit"></span></span>
+                        </span>
+                    </p>
+                    <pre><code class="hljs" data-trim>
+Hint:                        Next move:
+$: dimensions = (8, 8)       $: xmin, xmax = (1, 8)
+$: xmin, xmax = (0, 8)       $: ymin, ymax = (0, 0)
+$: ymin, ymax = (0, 8)       $: position   = (4, 0)
+$: position   = (0, 1)
+$: hint       = "UR"
+                    </code></pre>
+                </section>
+                <section data-transition="fade-out">
+                    <h3>Failure analysis</h3>
+                    <p class="building">
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"><span class="limit"></span><span class="bomb"></span></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"><span class="tux"></span></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-no"><span class="limit"></span></span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-no"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-no"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-no"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-no"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-no"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-no"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-no"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-no"></span>
+                            <span class="office-no"></span>
+                            <span class="office-no"></span>
+                            <span class="office-no"></span>
+                            <span class="office-no"></span>
+                            <span class="office-no"></span>
+                            <span class="office-no"></span>
+                            <span class="office-no"></span>
+                            <span class="office-no"></span>
+                        </span>
+                    </p>
+                    <pre><code class="hljs" data-trim>
+Hint:                        Next move:
+$: dimensions = (8, 8)       $: Cannot suggest anything,
+$: xmin, xmax = (1, 8)       $: it seems that
+$: ymin, ymax = (0, 0)       $: there is no solution
+$: position   = (4, 0)
+$: hint       = "L"
+                    </code></pre>
+                </section>
+                <section data-transition="fade-out">
+                    <h3>Failure analysis</h3>
+                    <p class="building">
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-on"><span class="limit"></span><span class="bomb"></span></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"><span class="tux"></span></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-on"></span>
+                            <span class="office-no"></span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-no"><span class="limit"></span></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-no"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-no"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-no"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-no"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-no"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-no"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-no"></span>
+                            <span class="office-no"></span>
+                            <span class="office-no"></span>
+                            <span class="office-no"></span>
+                            <span class="office-no"></span>
+                            <span class="office-no"></span>
+                            <span class="office-no"></span>
+                            <span class="office-no"></span>
+                            <span class="office-no"></span>
+                        </span>
+                    </p>
+                    <pre><code class="hljs" data-trim>
+Hint:                        Next move:
+$: dimensions = (8, 8)       $: xmin, xmax = (1, 3)
+$: xmin, xmax = (1, 8)       $: ymin, ymax = (0, 1)
+$: ymin, ymax = (0, 1)       $: position   = (2, 0)
+$: position   = (4, 0)
+$: hint       = "L"
+                    </code></pre>
+                </section>
+                <section data-transition="fade-out">
+                    <h3>Failure analysis</h3>
+                    <p class="building">
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-on"><span class="limit"></span><span class="bomb"></span></span>
+                            <span class="office-on"><span class="tux"></span></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-no"></span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"><span class="limit"></span></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-no"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-no"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-no"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-no"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-no"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-no"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-no"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-no"></span>
+                            <span class="office-no"></span>
+                            <span class="office-no"></span>
+                            <span class="office-no"></span>
+                            <span class="office-no"></span>
+                            <span class="office-no"></span>
+                            <span class="office-no"></span>
+                            <span class="office-no"></span>
+                            <span class="office-no"></span>
+                        </span>
+                    </p>
+                    <pre><code class="hljs" data-trim>
+Hint:                        Next move:
+$: dimensions = (8, 8)       $: xmin, xmax = (1, 2)
+$: xmin, xmax = (1, 3)       $: ymin, ymax = (0, 1)
+$: ymin, ymax = (0, 1)       $: position   = (1, 0)
+$: position   = (2, 0)
+$: hint       = "L"
+                    </code></pre>
+                </section>
+                <section data-transition="fade-out">
+                    <h3>Failure analysis</h3>
+                    <p class="building">
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-on"><span class="limit"></span><span class="bomb"></span><span class="tux"></span></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-no"></span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"><span class="limit"></span></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-no"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-no"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-no"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-no"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-no"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-no"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-off"></span>
+                            <span class="office-no"></span>
+                        </span>
+                        <span class="bline">
+                            <span class="office-no"></span>
+                            <span class="office-no"></span>
+                            <span class="office-no"></span>
+                            <span class="office-no"></span>
+                            <span class="office-no"></span>
+                            <span class="office-no"></span>
+                            <span class="office-no"></span>
+                            <span class="office-no"></span>
+                            <span class="office-no"></span>
+                        </span>
+                    </p>
+                    <pre><code class="hljs" data-trim>
+Hint:
+$: dimensions = (8, 8)
+$: xmin, xmax = (1, 2)
+$: ymin, ymax = (0, 1)
+$: position   = (1, 0)
+$: hint       = ""
+                    </code></pre>
+                </section>
+                <section>
+                    <h3>We've seen:</h3>
+                    <ul>
+                        <li class="fragment">corner cases not always well covered</li>
+                        <li class="fragment">expanding our coverage</li>
+                        <li class="fragment">complementary to unit-tests</li>
+                    </ul>
+                </section>
+            </section>
+            <section>
+                <section>
+                    <h2>Applications of property-based testing</h2>
+                    <ol class="agenda">
+                        <li>Case #1: pure algorithm</li>
+                        <li>Case #2: game</li>
+                        <li class="active">Case #3: user interface</li>
+                    </ol>
+                </section>
+                <section>
+                    <h3>Context</h3>
+                    <p class="fragment">Let's test a web interface</p>
+                </section>
+                <section>
+                    <h3>Quick tour of our web interface</h3>
+                    <ul>
+                        <li class="fragment">contains multiple tabs</li>
+                        <li class="fragment">allows user to cutomize colors (only on some tabs)</li>
+                        <li class="fragment">modifying a color done by opening a picker</li>
+                        <li class="fragment">modification has to be confirmed (or can be canceled)</li>
+                        <li class="fragment">modification can impact 3 different components: spectrum, hue, alpha</li>
+                    </ul>
+                </section>
+                <section>
+                    <h3>Property-based testing applied to UI</h3>
+                    <p class="fragment">We are already able to:</p>
+                    <ul>
+                        <li class="fragment">produce random inputs: integers, arrays, ...</li>
+                        <li class="fragment">play our tests randomly</li>
+                        <li class="fragment">shrink to the minimal case</li>
+                    </ul>
+                </section>
+                <section>
+                    <h3>Property-based testing applied to UI</h3>
+                    <p>Characteristics of a UI under test:</p>
+                    <ul>
+                        <li class="fragment">a user interface</li>
+                        <li class="fragment">send valid <i>commands</i></li>
+                        <li class="fragment">check assumptions post execution</li>
+                    </ul>
+                </section>
+                <section>
+                    <h3>Property-based testing applied to UI</h3>
+                    <p>We need to define commands:</p>
+                    <ul>
+                        <li class="fragment">check if it can be applied to current state</li>
+                        <li class="fragment">apply it</li>
+                    </ul>
+                </section>
+                <section>
+                    <h3>Property-based testing applied to UI</h3>
+                    <p>We have to produce arrays of commands</p>
+                    <pre><code class="hljs" data-trim>
+commands = array of commands in {CommandA, CommandB, ...}
+                    </code></pre>
+                    <p class="fragment">Then give them to the framework</p>
+                </section>
+                <section>
+                    <h3>Example</h3>
+                    <p class="fragment">List of commands we would like to test:</p>
+                    <ul class="fragment">
+                        <li>Go to tab</li>
+                        <li>Open color picker</li>
+                        <li>Select color</li>
+                        <li>Select hue</li>
+                        <li>Select alpha</li>
+                        <li>Confirm our choice</li>
+                        <li>Cancel modification</li>
+                    </ul>
+                </section>
+                <section>
+                    <h3>Example</h3>
+                    <p>Open color picker:</p>
+                    <pre class="fragment" style="font-size:0.5em"><code class="hljs" data-trim>
+var OpenPaletteForCommand = function(colorId) {
+  // can we run the command?
+  this.check = model => is_picker_accessible(model, colorId);
+
+  // run it
+  this.run = function(browser, model) {
+    model.picker_for = colorId;
+    model.color_before = await read_color(browser, colorId);
+    await open_picker(browser, model, colorId);
+    model.color_selected = await read_color_picker(browser);
+    return true;
+  };
+};                
+                    </code></pre>
+                </section>
+                <section>
+                    <h3>Example</h3>
+                    <p>Cancel modification:</p>
+                    <pre class="fragment" style="font-size:0.5em"><code class="hljs" data-trim>
+var CancelCommand = function() {
+  // can we run the command?
+  this.check = model => is_picker_opened(model);
+  
+  // run it
+  this.run = function(browser, model) {
+    await cancel_picker(browser);
+    const color_after_cancel = await read_color(browser, model.picker_for);
+    return model.color_before == color_after_cancel;
+  };
+};                
+                    </code></pre>
+                </section>
+                <section>
+                    <h3>Run tests</h3>
+                    <pre class="fragment"><code class="hljs" data-trim>
+- Expected Error: Failed after 1 tests and 10 shrinks.
+rngState: 00a5eb241093fc6d78;
+Counterexample: ;
+  GoToPanelCommand(color),
+  OpenPaletteForCommand(palette_NEUTRAL_DARK),
+  AlphaSpectrumCommand(alpha:2%),
+  CancelPaletteCommand();
+to be undefined.
+                    </code></pre>
+                    <p class="fragment">This example is inspired by a real case. The issue with cancel only occured when we were starting our modification by impacting alpha. It did not failed when we touched spectrum or hue followed by alpha and canceled just after.</p>
+                </section>
+                <section>
+                    <h3>We've seen:</h3>
+                    <ul>
+                        <li class="fragment">how extend and apply the framework to UI</li>
+                        <li class="fragment">run QA-like testing</li>
+                    </ul>
+                </section>
+            </section>
+            <section>
+                <h2>Questions?</h2>
+                <p><a href="https://github.com/dubzzz/property-based-testing-cpp" title="Talk materials &amp; sources" target="_blank">Talk materials &amp; sources</a> - <a href="https://github.com/dubzzz/" title="Github" target="_blank" style="color:white;">dubzzz<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4QsHDTYBDQhZnwAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAAAzklEQVRIx9WWSw7DMAhEM5b3XfUWvf/1JitLVmV+LiQpmyhy4AGGAI4NIcn5HQCiNrADMo06HEEmMOIAqqAWHJVQDY5qqATHFdAVHBp0/tDrlKUzzntmi0SkXZHi1XW24yZpJD9VqZVskHxDSnPWnUr270t1dQVLtp4VcWZ7/ccdXyHQ0vFrkWl2W9UGYul2KcqhOJ7e6N1TbKXwDXf+BkNj02qnl3t5C9aDuIHMUWelebmBaPCMglJ3Lk8b7LbPY4ZEtxR2eznNeY8DESdPzuaaeXqII8gAAAAASUVORK5CYII=" style="border:none;background:none;" /></a></p>                
+                <p><a href="https://www.youtube.com/watch?v=hXnS_Xjwk2Y" title="John Hughes - Don't Write Tests" target="_blank">John Hughes - Don't Write Tests</a></p>
+                <p><a href="https://labs.spotify.com/2015/06/25/rapid-check/" title="Generating test cases so you don’t have to" target="_blank">Generating test cases so you don’t have to</a></p>
+            </section>
+        </div>
+    </div>
+    <script src="reveal/head.min.js"></script><!-- https://cdn.jsdelivr.net/reveal.js/3.0.0/lib/js/head.min.js -->
+    <script src="reveal/reveal.min.js"></script><!-- https://cdn.jsdelivr.net/reveal.js/3.0.0/js/reveal.min.js -->
+    <script src="reveal-config.js"></script>
+    <script src="reveal-mouse.js"></script>
+    <script src="reveal-highlight.js"></script>
+  </body>
+</html>

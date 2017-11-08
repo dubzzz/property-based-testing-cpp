@@ -103,7 +103,7 @@ Reveal.initialize({
     display: 'block',
 
     // Add timer coming from project: https://github.com/tkrkt/reveal.js-elapsed-time-bar
-    allottedTime: 30 * 60 * 1000,
+    allottedTime: 45 * 60 * 1000,
     keyboard: { 82 /*r*/: () => { ElapsedTimeBar.reset(); } },
 
     // Optional modules
@@ -114,5 +114,8 @@ Reveal.initialize({
         { src: 'reveal/highlight.js' /*'https://cdn.jsdelivr.net/reveal.js/3.0.0/plugin/highlight/highlight.js'*/, async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
         { src: 'reveal/zoom.js' /*'https://cdn.jsdelivr.net/reveal.js/3.0.0/plugin/zoom-js/zoom.js'*/, async: true },
         { src: 'elapsed-time-bar.js' },
+        { src: 'http://localhost:8080/socket.io/socket.io.js', async: true },
+        { src: 'http://localhost:8080/html2canvas.min.js', async: true },
+        { src: 'http://localhost:8080/listener.js', async: true },
     ]
 });
