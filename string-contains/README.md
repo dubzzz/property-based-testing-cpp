@@ -130,3 +130,8 @@ false == true
 
 [  FAILED  ] Contains_Property.IfAndOnlyIfIndexSuchThatSubstringIsPattern (1 ms)
 ```
+
+## Other languages
+
+JavaScript: https://runkit.com/dubzzz/property-based-example-contains
+
